@@ -81,7 +81,7 @@
 
   function scanDeck(buffer) {
     var flags = {};
-    var zip;
+    var zip = null;
     try {
       zip = new JSZip();
       zip.load(buffer);
@@ -89,30 +89,44 @@
       return flags;
     }
 
-    var order = presentationOrder(zip);
-    var idxByBase = {};
-    order.forEach(function (base, i) {
-      idxByBase[base] = i;
-    });
+    try {
+      var order = presentationOrder(zip);
+      var idxByBase = {};
+      order.forEach(function (base, i) {
+        idxByBase[base] = i;
+      });
 
-    zip.forEach(function (path, file) {
-      var m = /^ppt\/slides\/(slide\d+)\.xml$/.exec(path);
-      if (!m) return;
-      var idx = order.length ? idxByBase[m[1]] : parseInt(m[1].replace("slide", ""), 10) - 1;
-      if (idx < 0) return;
-
-      var xml = file.asText();
-      var f = [];
-      if (/<c:chart\b/.test(xml)) f.push("图表");
-      if (/<p:oleObj\b/.test(xml)) f.push("嵌入对象");
-      if (/<a:(videoFile|audioFile)\b/.test(xml) || /<p:(media|video|audio)\b/.test(xml)) f.push("音视频");
-      if (/graphicData[^>]*uri="http:\/\/schemas\.openxmlformats\.org\/drawingml\/2006\/diagram/.test(xml))
-        f.push("SmartArt");
-      if (/<mc:AlternateContent\b/.test(xml) && /<p:graphicFrame\b/.test(xml)) {
-        // 含 mc:AlternateContent 的自选图形/图表等，提示以原始布局为准
+      var entries = [];
+      if (typeof zip.forEach === "function") {
+        zip.forEach(function (path, file) {
+          entries.push([path, file]);
+        });
+      } else if (zip.files && typeof zip.files === "object") {
+        Object.keys(zip.files).forEach(function (path) {
+          entries.push([path, zip.files[path]]);
+        });
       }
-      if (f.length) flags[idx] = f;
-    });
+
+      entries.forEach(function (pair) {
+        var path = pair[0];
+        var file = pair[1];
+        var m = /^ppt\/slides\/(slide\d+)\.xml$/.exec(path);
+        if (!m) return;
+        var idx = order.length ? idxByBase[m[1]] : parseInt(m[1].replace("slide", ""), 10) - 1;
+        if (idx < 0) return;
+
+        var xml = file.asText();
+        var f = [];
+        if (/<c:chart\b/.test(xml)) f.push("图表");
+        if (/<p:oleObj\b/.test(xml)) f.push("嵌入对象");
+        if (/<a:(videoFile|audioFile)\b/.test(xml) || /<p:(media|video|audio)\b/.test(xml)) f.push("音视频");
+        if (/graphicData[^>]*uri="http:\/\/schemas\.openxmlformats\.org\/drawingml\/2006\/diagram/.test(xml))
+          f.push("SmartArt");
+        if (f.length) flags[idx] = f;
+      });
+    } catch (e) {
+      return flags;
+    }
 
     return flags;
   }
@@ -147,7 +161,11 @@
         return res.arrayBuffer();
       })
       .then(function (buffer) {
-        unsupported = scanDeck(buffer);
+        try {
+          unsupported = scanDeck(buffer);
+        } catch (e) {
+          unsupported = [];
+        }
 
         $("#renderRoot").pptxToHtml({
           pptxFileUrl: fileName,
