@@ -38,7 +38,7 @@ python3 -m http.server 8000 --directory docs
 
 GitHub Pages 会对所有静态文件返回 `Cache-Control: max-age=600`（10 分钟浏览器缓存）。因此刚发布新版本后，个别浏览器（尤其是手机端）可能继续加载旧 JS/HTML，导致“别人好了自己还报错”。
 
-- 各 HTML 页面已加入 `Cache-Control: no-cache` 元标签，且本地资源（`assets/*`）在引用时带版本参数（如 `?v=20260815`），之后的更新只需改版本号即可强制全量刷新；
+- 各 HTML 页面已加入 `Cache-Control: no-cache` 元标签，且本地资源（`assets/*`）在引用时带内容哈希版本参数（如 `?v=452dc840d2`）。版本参数由 GitHub Actions 中的 `scripts/bump-asset-version.mjs` 根据 `assets/` 文件内容**自动生成**，JS/CSS 一改，部署时版本号自动更新，无需手动维护；
 - 若手机端仍看到旧版本：等待约 10 分钟重试，或使用无痕窗口 / 清除该站点缓存后重新访问；
 - CDN（jsDelivr）脚本已固定在具体 tag，不会随时间漂移。
 

@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "docs/**"
-      - "scripts/generate-manifest.mjs"
+      - "scripts/**"
       - ".github/workflows/generate-index.yml"
   workflow_dispatch:
 
@@ -29,8 +29,11 @@ jobs:
       - name: Generate manifest
         run: node scripts/generate-manifest.mjs
 
+      - name: Bump asset version
+        run: node scripts/bump-asset-version.mjs
+
       - name: Commit manifest if changed
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: regenerate deck index"
-          file_pattern: docs/manifest.json
+          file_pattern: docs/manifest.json docs/index.html docs/viewer.html
