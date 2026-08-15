@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APIKG4SYN 方法解读与评价</title>
+<style>
+  :root{
+    --navy:#102A43; --orange:#E67E22; --light:#F4F6F8; --white:#fff;
+    --dark:#333; --gray:#8A8F96; --bluebg:#E8F0F8; --green:#2E7D32; --red:#B33A3A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    background:#0d1b2a; color:var(--dark); overflow:hidden;
+  }
+  .deck{width:100vw; height:100vh; position:relative;}
+  .slide{
+    position:absolute; inset:0; margin:auto;
+    width:min(100vw, calc(100vh * 16 / 9));
+    height:min(100vh, calc(100vw * 9 / 16));
+    background:var(--white); border-radius:6px; overflow:hidden;
+    opacity:0; visibility:hidden; transform:scale(.97);
+    transition:opacity .35s ease, transform .35s ease;
+    display:flex; flex-direction:column; padding:3.2vh 3vw;
+  }
+  .slide.active{opacity:1; visibility:visible; transform:scale(1);}
+
+  /* ---- 通用 ---- */
+  .ctitle{font-size:2.5vh; font-weight:700; color:var(--navy);}
+  .csub{font-size:1.35vh; color:var(--gray); margin-top:.5vh;}
+  .rule{width:7vw; height:.35vh; background:var(--orange); margin:1.4vh 0 2vh;}
+  .bulk p{margin-bottom:1.4vh; line-height:1.55; font-size:1.7vh;}
+  .num-pill{display:inline-flex; align-items:center; justify-content:center; width:3.4vh; height:3.4vh;
+    border-radius:50%; background:var(--orange); color:#fff; font-weight:700; font-size:1.8vh;}
+
+  /* ---- 标题页 ---- */
+  .title-slide{background:var(--navy); color:#fff; align-items:center; justify-content:center; text-align:center;}
+  .title-slide h1{font-size:5.4vh; margin-bottom:2.4vh; line-height:1.3;}
+  .title-slide .sub{font-size:3vh; color:#CFDDEA; margin-bottom:4vh;}
+  .title-slide .rule{width:20vw; margin:0 auto 4vh;}
+  .title-slide .meta{font-size:1.6vh; color:#AFC2D5; line-height:2;}
+  .title-slide .meta2{font-size:1.4vh; color:#8FA6BC;}
+
+  /* ---- 流程 P2 ---- */
+  .flow{display:flex; align-items:stretch; gap:.8vw; margin:1vh 0 4vh;}
+  .fbox{flex:1; border-radius:10px; padding:1.6vh .8vw; text-align:center;}
+  .fbox b{display:block; font-size:1.8vh; margin-bottom:.8vh; color:var(--navy);}
+  .fbox span{font-size:1.35vh; color:var(--dark); line-height:1.5;}
+  .fbox.hot{background:var(--orange);} .fbox.hot b,.fbox.hot span{color:#fff;}
+  .fbox.lb{background:var(--bluebg);} .fbox.gy{background:var(--light);}
+  .farrow{align-self:center; font-size:2.6vh; color:var(--orange); font-weight:700;}
+  .three{background:var(--light); border-radius:10px; padding:2.4vh 1.6vw;}
+  .three h3{color:var(--orange); font-size:1.6vh; margin-bottom:1.4vh;}
+  .three p{font-size:1.65vh; line-height:1.6; margin-bottom:1vh;}
+  .three p:last-child{margin-bottom:0;}
+
+  /* ---- 表格 ---- */
+  table{border-collapse:collapse; width:100%; font-size:1.55vh;}
+  th,td{border:1px solid #dfe5ec; padding:.9vh .6vw; text-align:left; vertical-align:middle;}
+  thead th{background:var(--navy); color:#fff;}
+  tbody tr:nth-child(even){background:var(--light);}
+  td.k{font-weight:700; color:var(--navy); white-space:nowrap;}
+  .tcols-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:.8vw;}
+  .tcols-3 .chead{padding:1.2vh .6vw; border-radius:8px 8px 0 0; color:#fff; font-weight:700; font-size:1.7vh;}
+  .tcols-3 .cbody{background:var(--light); border-radius:0 0 8px 8px; padding:1.4vh .8vw; font-size:1.5vh; line-height:1.75;}
+
+  /* ---- 卡片 P5 ---- */
+  .cards{display:grid; grid-template-columns:repeat(4,1fr); gap:.9vw; margin:2vh 0;}
+  .card{border:1px solid var(--bluebg); border-radius:10px; padding:2vh .9vw; background:#fff;}
+  .card b{font-size:1.85vh; color:var(--navy); display:block; margin-bottom:1.2vh;}
+  .card .chg{font-size:1.5vh; color:var(--dark); margin-bottom:1vh; line-height:1.5;}
+  .card .chg em{font-style:normal; font-size:2.1vh; font-weight:800;}
+  .card .note{font-size:1.3vh; color:var(--gray); line-height:1.5;}
+  .bar{height:1.4vh; border-radius:6px; background:var(--light); margin-top:1.6vh; overflow:hidden;}
+  .bar i{display:block; height:100%; border-radius:6px;}
+  .remark{font-size:1.75vh; color:var(--navy); line-height:1.6;}
+
+  /* ---- P6 双栏样例 ---- */
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:1.2vw;}
+  .two .hdr{padding:1.1vh .6vw; border-radius:8px 8px 0 0; color:#fff; font-weight:700; font-size:1.7vh;}
+  .two .box{background:var(--light); border-radius:0 0 8px 8px; padding:1.6vh 1vw; font-size:1.42vh; line-height:1.6;}
+  .two .box h4{font-size:1.4vh; color:var(--orange); margin:1vh 0 .4vh;}
+  .two .box h4:first-child{margin-top:0;}
+  .warn{font-size:1.7vh; font-weight:700; color:var(--red); margin-top:2.4vh;}
+
+  /* ---- 事实卡 P7 ---- */
+  .facts{margin-top:1vh;}
+  .fact{display:flex; gap:1vw; margin-bottom:2vh;}
+  .fact .n{flex:0 0 auto; width:2.8vh; height:2.8vh; border-radius:50%; color:#fff; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:1.7vh; margin-top:.2vh;}
+  .fact b{font-size:1.8vh; color:var(--navy); display:block; margin-bottom:.4vh;}
+  .fact p{font-size:1.55vh; line-height:1.55;}
+  .banner{background:var(--navy); color:#fff; padding:1.4vh 1.2vw; border-radius:8px; font-size:1.9vh; font-weight:700; margin-top:1vh;}
+  .banner.bluebg{background:var(--bluebg); color:var(--navy);}
+
+  /* ---- 双栏评价 P8 ---- */
+  .eval2{display:grid; grid-template-columns:1fr 1fr; gap:1.2vw;}
+  .eval2 .h{color:#fff; padding:1.2vh .8vw; border-radius:8px 8px 0 0; font-weight:700; font-size:1.8vh;}
+  .eval2 .b{background:var(--light); border-radius:0 0 8px 8px; padding:1.6vh 1vw; font-size:1.55vh; line-height:1.7;}
+  .eval2 .b p{margin-bottom:1vh;}
+  .eval2 .b p:last-child{margin-bottom:0;}
+  .ok{color:var(--green); font-weight:700;}
+  .no{color:var(--red); font-weight:700;}
+
+  /* ---- P10 ---- */
+  .take{display:flex; gap:1vw; margin-bottom:2.4vh;}
+  .take .stick{flex:0 0 auto; width:.35vw; border-radius:3px; background:var(--orange);}
+  .take b{font-size:1.9vh; color:var(--navy); display:block; margin-bottom:.5vh;}
+  .take p{font-size:1.6vh; line-height:1.6;}
+
+  /* ---- 附录 ---- */
+  .appendix{display:flex; gap:1.5vw;}
+  .appendix table{width:78%;}
+  .side{width:22%; font-size:1.4vh; color:var(--dark); line-height:1.7;}
+  .side h4{color:var(--orange); font-size:1.6vh; margin-bottom:1.2vh;}
+  .side p{margin-bottom:1.2vh;}
+  .ht{font-weight:700; color:var(--navy);}
+
+  /* ---- 页脚 ---- */
+  .foot{position:absolute; bottom:1.2vh; left:3vw; right:3vw; display:flex; justify-content:space-between;
+    font-size:1.5vh; color:#5b6472;}
+
+  /* ---- 导航（安静模式：不操作时淡出，动鼠标/键盘/触摸即浮现） ---- */
+  .navbtn{position:fixed; top:50%; transform:translateY(-50%); z-index:50; width:5.2vh; height:5.2vh;
+    border:none; border-radius:50%; background:#fff; color:var(--navy); font-size:3vh; font-weight:700;
+    cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.25); opacity:.85;
+    transition:opacity .45s ease, background .2s, color .2s, transform .15s;}
+  body.idle .navbtn{opacity:.05;}
+  .navbtn:hover{opacity:1 !important; background:var(--orange); color:#fff;}
+  .navbtn:active{transform:translateY(-50%) scale(.92);}
+  #prev{left:1.4vw;} #next{right:1.4vw;}
+  .count{position:fixed; bottom:1.8vh; left:50%; transform:translateX(-50%); z-index:50;
+    background:rgba(16,42,67,.7); color:#fff; font-size:1.7vh; padding:.6vh 1.4vw;
+    border-radius:2.2vh; letter-spacing:.14em; opacity:.85;
+    transition:opacity .45s ease;}
+  body.idle .count{opacity:.12;}
+  .progress{position:fixed; top:0; left:0; height:.5vh; background:var(--orange); z-index:60;
+    transition:width .3s ease;}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- P1 标题 -->
+  <section class="slide title-slide">
+    <h1>API 文档 → 训练数据 →<br>大模型学会新 API</h1>
+    <p class="sub">—— APIKG4SYN 全流程解读与通用评价</p>
+    <div class="rule"></div>
+    <p class="meta">附：与 HumanEval 的对比 · 基于仓库代码与实验数据的核查</p>
+    <p class="meta2">面向懂技术的决策层 · 11 页</p>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>1 / 11</span></div>
+  </section>
+
+  <!-- P2 一页看懂 -->
+  <section class="slide">
+    <div class="ctitle">一页看懂：它造练习册、再验收</div>
+    <div class="csub">输入官方 API 文档，输出可直接用于训练的数据，全程无需人工标注</div>
+    <div class="rule"></div>
+    <div class="flow">
+      <div class="fbox lb"><b>官方 API 文档</b><span>.d.ts 声明文件<br>（华为 ArkTS）</span></div>
+      <div class="farrow">→</div>
+      <div class="fbox gy"><b>API 成员清单</b><span>从文档中解析出<br>类 / 方法 / 属性</span></div>
+      <div class="farrow">→</div>
+      <div class="fbox hot"><b>练习题 + 答案</b><span>大模型按清单出题并<br>写答案代码 ×8,000 条</span></div>
+      <div class="farrow">→</div>
+      <div class="fbox lb"><b>微调大模型</b><span>继续训练 7B 模型<br>教它这种语言的写法</span></div>
+      <div class="farrow">→</div>
+      <div class="fbox gy"><b>108 道人工题</b><span>跑测试验收<br>看通过率（pass@1）</span></div>
+    </div>
+    <div class="three">
+      <h3>三句话概括</h3>
+      <p>▍ 它造了一套“编程练习题 → 答案代码”的练习册（8,000 条），用来教大模型学会一套新 API（华为 ArkTS）。</p>
+      <p>▍ 它同时造了一份人工编写的小考卷（108 题），用来验收“教学”效果，看大模型学完之后通过率多少。</p>
+      <p>▍ 全流程自动化：官方文档进去、可训练的数据出来——这是它相对人工标注数据集的根本差异。</p>
+    </div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>2 / 11</span></div>
+  </section>
+
+  <!-- P3 四步流水线 -->
+  <section class="slide">
+    <div class="ctitle">四步流水线</div>
+    <div class="csub">对应仓库里 construct_KG → generate_single/multi_api_data → eval 四个目录</div>
+    <div class="rule"></div>
+    <div style="margin-top:1vh">
+      <div style="display:flex; gap:1vw; margin-bottom:2.4vh; align-items:flex-start;">
+        <span class="num-pill">1</span>
+        <div><b style="font-size:1.9vh; color:var(--navy);">解析文档</b>
+          <p style="font-size:1.6vh; line-height:1.55; margin-top:.4vh;">读取官方 API 声明文件（.d.ts），逐条提取类、方法、属性的名字与说明，整理成结构化清单（即“知识图谱”，存入 Neo4j 图数据库）。</p></div>
+      </div>
+      <div style="display:flex; gap:1vw; margin-bottom:2.4vh; align-items:flex-start;">
+        <span class="num-pill">2</span>
+        <div><b style="font-size:1.9vh; color:var(--navy);">出题 + 写答案</b>
+          <p style="font-size:1.6vh; line-height:1.55; margin-top:.4vh;">把清单喂给大模型：先按指定 API 出题（如“用 sort 和 removeByIndex 写一个排序并去尾的函数”），再让它写出答案代码；单 API 与多 API 两条线各自生成。</p></div>
+      </div>
+      <div style="display:flex; gap:1vw; margin-bottom:2.4vh; align-items:flex-start;">
+        <span class="num-pill">3</span>
+        <div><b style="font-size:1.9vh; color:var(--navy);">微调模型</b>
+          <p style="font-size:1.6vh; line-height:1.55; margin-top:.4vh;">用 8,000 条“题 → 答案”（6,400 单 API + 1,600 多 API）继续训练一个开源 7B 模型，让它学会按这种语言的 API 规范写代码。</p></div>
+      </div>
+      <div style="display:flex; gap:1vw; margin-bottom:1vh; align-items:flex-start;">
+        <span class="num-pill">4</span>
+        <div><b style="font-size:1.9vh; color:var(--navy);">验收</b>
+          <p style="font-size:1.6vh; line-height:1.55; margin-top:.4vh;">108 道人工题（每题带单元测试）交给模型作答，把代码放进真实工程编译、跑测试，统计通过率 pass@1。</p></div>
+      </div>
+    </div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>3 / 11</span></div>
+  </section>
+
+  <!-- P4 HumanEval 对比 -->
+  <section class="slide">
+    <div class="ctitle">与 HumanEval 的对比：练习册 vs 考卷</div>
+    <div class="csub">HumanEval 是“考试题”，APIKG4SYN 是“练习册 ＋ 考试题”</div>
+    <div class="rule"></div>
+    <table>
+      <thead><tr><th style="width:16%">维度</th><th>HumanEval</th><th>APIKG4SYN</th></tr></thead>
+      <tbody>
+        <tr><td class="k">定位</td><td>考卷：164 题，只评测，从不拿它训练</td><td>练习册（8,000 条）＋ 考卷（108 条）</td></tr>
+        <tr><td class="k">测试在哪里</td><td>每道题自带测试代码</td><td>练习册没有测试；只有考卷带测试</td></tr>
+        <tr><td class="k">怎么判对错</td><td>跑断言测试，结果与预期相等即算对</td><td>编译并跑测试，日志中无报错即算对</td></tr>
+        <tr><td class="k">数据怎么来</td><td>人工编写（OpenAI 团队）</td><td>全自动生成，无人工标注</td></tr>
+        <tr><td class="k">一句话</td><td>测“模型会不会”</td><td>教“模型学会”，再测效果</td></tr>
+      </tbody>
+    </table>
+    <p class="remark" style="margin-top:2.6vh;">结论：两者分工不同——HumanEval 只“考”，APIKG4SYN 先“教”再“考”。它结合了自动生成数据与人工评测，是可训练 + 可验证的闭环。</p>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>4 / 11</span></div>
+  </section>
+
+  <!-- P5 实测效果 -->
+  <section class="slide">
+    <div class="ctitle">实测效果：练习册确实有效（多模型）</div>
+    <div class="csub">数字来自仓库 eval_data/ 下的实验结果，均可复核</div>
+    <div class="rule"></div>
+    <div class="cards">
+      <div class="card">
+        <b>Qwen2.5-Coder-7B</b>
+        <p class="chg">微调前 8.3% → <em style="color:var(--green)">25.0%</em></p>
+        <p class="note">最好成绩，代码预训练底子好</p>
+        <div class="bar"><i style="width:85%; background:var(--green);"></i></div>
+      </div>
+      <div class="card">
+        <b>Mistral-7B</b>
+        <p class="chg">微调前 4.6% → <em style="color:var(--green)">14.8%</em></p>
+        <p class="note">提升约 10 个百分点</p>
+        <div class="bar"><i style="width:50%; background:var(--green);"></i></div>
+      </div>
+      <div class="card">
+        <b>DeepSeek-r1-7B</b>
+        <p class="chg">微调前 0.0% → <em style="color:var(--green)">9.3%</em></p>
+        <p class="note">从一道不会到会 10 题 / 108</p>
+        <div class="bar"><i style="width:31%; background:var(--green);"></i></div>
+      </div>
+      <div class="card">
+        <b>GPT-4o（闭源参考）</b>
+        <p class="chg">不微调 <em style="color:var(--navy)">17.6%</em></p>
+        <p class="note">当作强基线对照</p>
+        <div class="bar"><i style="width:59%; background:var(--navy);"></i></div>
+      </div>
+    </div>
+    <p class="remark">结论：思路成立——用 8,000 条自动生成的练习册做微调，确实让多个模型学会了新 API 的用法；提升幅度因基座模型而异，代码底子好的模型收益更大。</p>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>5 / 11</span></div>
+  </section>
+
+  <!-- P6 数据样例 -->
+  <section class="slide">
+    <div class="ctitle">数据长什么样：练习册一条 vs 考卷一条</div>
+    <div class="csub">左侧：训练用（题 + 答案）；右侧：验收用（题 + 测试）</div>
+    <div class="rule"></div>
+    <div class="two">
+      <div>
+        <div class="hdr" style="background:var(--navy);">练习册（8,000 条训练数据）</div>
+        <div class="box">
+          <h4>题目（instruction）</h4>
+          <p>“Write a function that takes an ArrayList, sorts it in ascending order, then removes the first and last elements using the sort and removeByIndex methods.”</p>
+          <h4>答案（output）</h4>
+          <p>import { ArrayList } from '@kit.ArkTS';<br>export function sortAndRemoveFirstLast&lt;T&gt;(list: ArrayList&lt;T&gt;) { list.sort(...); if (list.length >= 2) { ... removeByIndex ... } }</p>
+          <h4>要点</h4>
+          <p>题目强制点名用到的 API 方法；答案由大模型生成，仅经编译级检查，无行为验证。</p>
+        </div>
+      </div>
+      <div>
+        <div class="hdr" style="background:var(--orange);">考卷（108 道人工题）</div>
+        <div class="box">
+          <h4>题目 + 参考代码 + 单元测试（test）</h4>
+          <p>题目：写 bfsOrder，用 Deque 实现 BFS 遍历。<br>测试（节选）：<br>&nbsp;&nbsp;it('should return BFS order', ...)<br>&nbsp;&nbsp;&nbsp;&nbsp;const order = bfsOrder(graph, 0);<br>&nbsp;&nbsp;&nbsp;&nbsp;expect(order[0]).assertEqual(0); ...</p>
+          <h4>判分方式</h4>
+          <p>把模型作答写入工程 → 真实编译 → 跑 hypium 单元测试 → 日志无报错即通过。</p>
+        </div>
+      </div>
+    </div>
+    <p class="warn">注意：练习册里已确认混有少量空答案样本（6,400 条中 34 条），生成后未过滤，会直接进入训练数据。</p>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>6 / 11</span></div>
+  </section>
+
+  <!-- P7 代码核查 -->
+  <section class="slide">
+    <div class="ctitle">代码核查：仓库现状（四个事实）</div>
+    <div class="csub">以下结论均可追溯至仓库代码</div>
+    <div class="rule"></div>
+    <div class="facts">
+      <div class="fact">
+        <span class="n" style="background:var(--red);">1</span>
+        <div><b>生成流程里没有校验环节</b>
+          <p>“编译不过就重写”的功能未接通：流程只负责出题、写码、落盘；单 API 生成器还引用了未定义的变量，本身跑不起来。</p></div>
+      </div>
+      <div class="fact">
+        <span class="n" style="background:var(--red);">2</span>
+        <div><b>判对错只看“能否编译”</b>
+          <p>编译、测试日志中无报错即算对，不检查代码是否真的实现了题目要求（无行为验证、无断言）。</p></div>
+      </div>
+      <div class="fact">
+        <span class="n" style="background:var(--red);">3</span>
+        <div><b>空答案样本不过滤</b>
+          <p>大模型输出解析失败时被记为空白并照常写入数据集（6,400 条中 34 条为空）。</p></div>
+      </div>
+      <div class="fact">
+        <span class="n" style="background:var(--orange);">4</span>
+        <div><b>重量级部分收益无证据</b>
+          <p>知识图谱 + 搜索选 API 组合（Neo4j + MCTS）环节复杂，但对最终效果的贡献没有直接的对照实验证据。</p></div>
+      </div>
+    </div>
+    <div class="banner bluebg">含义：以仓库代码现状，无法复现论文所述的生成流程；练习册里的“答案正确性”未经验证。</div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>7 / 11</span></div>
+  </section>
+
+  <!-- P8 通用评价 -->
+  <section class="slide">
+    <div class="ctitle">通用评价：哪些环节站得住</div>
+    <div class="csub">不绑定任何语言，只评这个仓库本身</div>
+    <div class="rule"></div>
+    <div class="eval2">
+      <div>
+        <div class="h" style="background:var(--green);">站得住（成立的部分）</div>
+        <div class="b">
+          <p><span class="ok">✓</span> 整体思路：文档 → 练习册 → 微调 → 考卷，闭环完整。</p>
+          <p><span class="ok">✓</span> 实证有效：四个模型的数据显示微调后通过率普遍提升。</p>
+          <p><span class="ok">✓</span> 设计了“编译报错回喂模型重写”的机制——方向正确（虽未接通）。</p>
+          <p><span class="ok">✓</span> 评测端做得实：真实工程的编译与测试执行，而非沙箱模拟。</p>
+        </div>
+      </div>
+      <div>
+        <div class="h" style="background:var(--red);">有缺陷（未完成的部分）</div>
+        <div class="b">
+          <p><span class="no">✗</span> 生成侧缺校验：没有真正“编译反馈重写”的执行路径。</p>
+          <p><span class="no">✗</span> 正确性只到“能编译”，不做行为验证。</p>
+          <p><span class="no">✗</span> 空样本不清理，噪声直接进训练集。</p>
+          <p><span class="no">✗</span> 关键代码缺失/有 bug，流程不可复现。</p>
+        </div>
+      </div>
+    </div>
+    <div class="banner" style="margin-top:2.2vh;">一句话：方法论成立，工程未完成——值得吸收方法，不宜照搬代码。</div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>8 / 11</span></div>
+  </section>
+
+  <!-- P9 借鉴判断 -->
+  <section class="slide">
+    <div class="ctitle">若想借鉴：保留什么、改造什么、砍掉什么</div>
+    <div class="csub">适用场景：想用同样思路教大模型学会一套新 API</div>
+    <div class="rule"></div>
+    <div class="tcols-3">
+      <div>
+        <div class="chead" style="background:var(--green);">值得保留</div>
+        <div class="cbody">
+          文档 → 出题 → 写码 → 微调 → 考卷的最小闭环；<br><br>
+          评测用真实编译 + 单元测试判分；<br><br>
+          编译报错回喂模型的设计思路。
+        </div>
+      </div>
+      <div>
+        <div class="chead" style="background:var(--orange);">必须改造</div>
+        <div class="cbody">
+          补上“编译/测试反馈重写”的校验环，让错误答案真正被拒；<br><br>
+          过滤空答案与质量不合格样本；<br><br>
+          把流程脚本化、可复现，补回缺失的生成代码。
+        </div>
+      </div>
+      <div>
+        <div class="chead" style="background:var(--red);">不建议照搬</div>
+        <div class="cbody">
+          Neo4j 知识图谱 + MCTS 组合出题（复杂且无收益证据）；<br><br>
+          Windows 批处理与硬编码路径的工程方式；<br><br>
+          以当前代码直接复现论文结果的做法。
+        </div>
+      </div>
+    </div>
+    <p style="font-size:1.5vh; color:var(--gray); margin-top:2.2vh; line-height:1.6;">判断依据：分档标准是“有没有证据支撑”与“要不要额外工程投入”；本页结论均来自可追溯的仓库代码、数据与实验结果。</p>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>9 / 11</span></div>
+  </section>
+
+  <!-- P10 收尾 -->
+  <section class="slide">
+    <div class="ctitle">收尾：你能带走什么</div>
+    <div class="rule"></div>
+    <div style="margin-top:4vh">
+      <div class="take"><div class="stick"></div>
+        <div><b>如果你想借鉴它“教大模型学新 API”的办法</b>
+          <p>最小闭环值得做：文档 → 出题 → 写码 →（补上校验）→ 微调 → 考卷。先小规模试跑，用新 API 的数据验证提升幅度。</p></div>
+      </div>
+      <div class="take"><div class="stick"></div>
+        <div><b>如果你想复现它的结果</b>
+          <p>当前代码不可复现：需要补回生成逻辑与校验环、清理空样本、脚本化流程。</p></div>
+      </div>
+      <div class="take"><div class="stick"></div>
+        <div><b>它的最大价值</b>
+          <p>证明了“自动生成练习册 + 微调”能让大模型学会一套它原本不会的新 API——这是可复用的方法论。</p></div>
+      </div>
+    </div>
+    <div class="banner" style="margin-top:5vh;">一句话：一个思路有效、工程缺环的仓库——值得吸收方法，不宜照搬代码。</div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>10 / 11</span></div>
+  </section>
+
+  <!-- P11 附录 -->
+  <section class="slide">
+    <div class="ctitle">附录：全部评测结果（19 份配置）</div>
+    <div class="csub">数据来源：eval_data/ 下各模型 × 各配置的实验结果 JSON，由 test_passed 字段统计</div>
+    <div class="rule"></div>
+    <div class="appendix">
+      <table>
+        <thead><tr><th>模型</th><th>配置</th><th>通过 / 108</th><th>pass@1</th></tr></thead>
+        <tbody>
+          <tr><td class="ht">Qwen2.5-Coder-7B</td><td>微调 8,000 条</td><td>27</td><td>25.0%</td></tr>
+          <tr><td>GPT-4o</td><td>闭源，不微调</td><td>19</td><td>17.6%</td></tr>
+          <tr><td class="ht">Mistral-7B</td><td>微调 8,000 条</td><td>16</td><td>14.8%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>微调 6,000 条</td><td>23</td><td>21.3%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>微调 4,000 条</td><td>18</td><td>16.7%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>开源数据微调</td><td>11</td><td>10.2%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>仅单 API 数据（消融）</td><td>11</td><td>10.2%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>微调 2,000 条</td><td>10</td><td>9.3%</td></tr>
+          <tr><td>Qwen3-32B</td><td>大模型，不微调</td><td>10</td><td>9.3%</td></tr>
+          <tr><td>o4-mini</td><td>闭源，不微调</td><td>10</td><td>9.3%</td></tr>
+          <tr><td class="ht">DeepSeek-r1-7B</td><td>微调 8,000 条</td><td>10</td><td>9.3%</td></tr>
+          <tr><td>Qwen2.5-Coder-7B</td><td>不微调（基线）</td><td>9</td><td>8.3%</td></tr>
+          <tr><td>DeepSeek-r1-7B</td><td>微调 6,000 条</td><td>7</td><td>6.5%</td></tr>
+          <tr><td>Mistral-7B</td><td>微调 2,000 条</td><td>7</td><td>6.5%</td></tr>
+          <tr><td>DeepSeek-r1-7B</td><td>微调 2,000 条</td><td>6</td><td>5.6%</td></tr>
+          <tr><td>Mistral-7B</td><td>微调 4,000 条</td><td>6</td><td>5.6%</td></tr>
+          <tr><td>Mistral-7B</td><td>不微调（基线）</td><td>5</td><td>4.6%</td></tr>
+          <tr><td>DeepSeek-r1-671B</td><td>大模型，不微调</td><td>4</td><td>3.7%</td></tr>
+          <tr><td>DeepSeek-r1-7B</td><td>微调 4,000 条</td><td>2</td><td>1.9%</td></tr>
+          <tr><td>DeepSeek-r1-7B</td><td>开源数据微调</td><td>1</td><td>0.9%</td></tr>
+          <tr><td>DeepSeek-r1-7B</td><td>不微调（基线）</td><td>0</td><td>0.0%</td></tr>
+        </tbody>
+      </table>
+      <div class="side">
+        <h4>阅读提示</h4>
+        <p><b class="ht">加深色行</b> = 各模型“微调 8,000 条”（完整数据）的成绩。</p>
+        <p>“不微调”即用基座模型直接作答，作为对照。</p>
+        <p>闭源模型（GPT-4o / o4-mini / Qwen3-32B）仅作参考基线。</p>
+        <p>结论：微调用数据量越大、基座代码能力越强，提升越明显。</p>
+      </div>
+    </div>
+    <div class="foot"><span>APIKG4SYN 方法解读与评价</span><span>11 / 11</span></div>
+  </section>
+
+</div>
+
+<button class="navbtn" id="prev" aria-label="上一页">‹</button>
+<button class="navbtn" id="next" aria-label="下一页">›</button>
+<div class="count" id="count">1 / 11</div>
+<div class="progress" id="progress"></div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var cur = 0;
+  var countEl = document.getElementById('count');
+  var prog = document.getElementById('progress');
+
+  function show(i){
+    cur = Math.max(0, Math.min(total-1, i));
+    slides.forEach(function(s, idx){ s.classList.toggle('active', idx === cur); });
+    countEl.textContent = (cur+1) + ' / ' + total;
+    prog.style.width = ((cur+1)/total*100) + 'vw';
+  }
+  function next(){ show(cur+1); }
+  function prev(){ show(cur-1); }
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if(e.key === 'Home') { show(0); }
+    else if(e.key === 'End') { show(total-1); }
+  });
+  var tx = 0, ty = 0;
+  document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; ty = e.touches[0].clientY; });
+  document.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){ dx < 0 ? next() : prev(); }
+  });
+  /* 安静模式：2.5 秒无操作则淡出导航，任意操作即恢复 */
+  var idleTimer;
+  function wake(){ document.body.classList.remove('idle'); clearTimeout(idleTimer); idleTimer = setTimeout(function(){ document.body.classList.add('idle'); }, 2500); }
+  ['mousemove','touchstart','touchmove','wheel','keydown'].forEach(function(ev){
+    document.addEventListener(ev, wake, {passive:true});
+  });
+  wake();
+  show(0);
+})();
+</script>
+</body>
+</html>
