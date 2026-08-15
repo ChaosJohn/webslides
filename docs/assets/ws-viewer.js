@@ -11,6 +11,7 @@
   var rendered = false;
   var lastSwipeAt = 0;
   var THUMB_W = 168;
+  var deckBuffer = null; // 原始 pptx 二进制，用于渲染后的保真补偿
 
   var $ = window.jQuery;
 
@@ -139,6 +140,112 @@
     return flags;
   }
 
+  // ============================ 保真补偿：文本框内边距 ============================
+
+  function readShapeInsets(xml, f) {
+    var shapes = [];
+    var re = /<p:sp[\s\S]*?<\/p:sp>/g;
+    var m;
+    while ((m = re.exec(xml))) {
+      var seg = m[0];
+      var off = /<a:off x="(-?\d+)" y="(-?\d+)"\s*\/>/.exec(seg);
+      var ext = /<a:ext cx="(\d+)" cy="(\d+)"\s*\/>/.exec(seg);
+      if (!off || !ext) continue;
+      var bpr = /<a:bodyPr\b([^>]*)\/?>/.exec(seg);
+      var attrs = {};
+      if (bpr) {
+        var reA = /([\w]+)="([\-0-9]+)"/g;
+        var mm;
+        while ((mm = reA.exec(bpr[1]))) attrs[mm[1]] = parseInt(mm[2], 10);
+      }
+      var L = attrs.lIns !== undefined ? attrs.lIns : 91440;
+      var R = attrs.rIns !== undefined ? attrs.rIns : 91440;
+      var T = attrs.tIns !== undefined ? attrs.tIns : 91440;
+      var B = attrs.bIns !== undefined ? attrs.bIns : 91440;
+      shapes.push({
+        x: parseInt(off[1], 10) * f,
+        y: parseInt(off[2], 10) * f,
+        w: parseInt(ext[1], 10) * f,
+        h: parseInt(ext[2], 10) * f,
+        l: L * f,
+        r: R * f,
+        t: T * f,
+        b: B * f
+      });
+    }
+    return shapes;
+  }
+
+  function pickShape(shapes, l, t, w, h) {
+    var best = null;
+    var bestD = Infinity;
+    for (var i = 0; i < shapes.length; i++) {
+      var s = shapes[i];
+      var d = Math.abs(s.x - l) + Math.abs(s.y - t) + Math.abs(s.w - w) + Math.abs(s.h - h);
+      if (d < bestD) {
+        bestD = d;
+        best = s;
+      }
+    }
+    return bestD <= 8 ? best : null;
+  }
+
+  function applyTextBoxInsets() {
+    if (!deckBuffer || !frames.length) return;
+    var f = 96 / 914400;
+    try {
+      var zip = new JSZip();
+      zip.load(deckBuffer);
+      var order = presentationOrder(zip);
+      var byBase = {};
+      order.forEach(function (b, i) {
+        byBase[b] = i;
+      });
+
+      var insetsBySlide = [];
+      var entries = [];
+      if (typeof zip.forEach === "function") {
+        zip.forEach(function (path, file) {
+          entries.push([path, file]);
+        });
+      } else if (zip.files) {
+        Object.keys(zip.files).forEach(function (path) {
+          entries.push([path, zip.files[path]]);
+        });
+      }
+      entries.forEach(function (pair) {
+        var m = /^ppt\/slides\/(slide\d+)\.xml$/.exec(pair[0]);
+        if (!m) return;
+        var idx = order.length ? byBase[m[1]] : parseInt(m[1].replace("slide", ""), 10) - 1;
+        if (idx < 0) return;
+        insetsBySlide[idx] = readShapeInsets(pair[1].asText(), f);
+      });
+
+      frames.forEach(function (frame, idx) {
+        var shapes = insetsBySlide[idx];
+        if (!shapes || !shapes.length) return;
+        var blocks = frame.querySelectorAll(".block");
+        for (var i = 0; i < blocks.length; i++) {
+          var blk = blocks[i];
+          if (blk.querySelector("table")) continue;
+          var l = parseFloat(blk.style.left);
+          var t = parseFloat(blk.style.top);
+          var w = parseFloat(blk.style.width);
+          var h = parseFloat(blk.style.height);
+          if (isNaN(l) || isNaN(t) || isNaN(w) || isNaN(h)) continue;
+          var shape = pickShape(shapes, l, t, w, h);
+          if (!shape) continue;
+          blk.style.paddingLeft = shape.l + "px";
+          blk.style.paddingRight = shape.r + "px";
+          blk.style.paddingTop = shape.t + "px";
+          blk.style.paddingBottom = shape.b + "px";
+        }
+      });
+    } catch (e) {
+      // 保底：忽略本次补偿，不影响渲染
+    }
+  }
+
   // ============================ 加载与渲染 ============================
 
   function waitForRender() {
@@ -169,6 +276,7 @@
         return res.arrayBuffer();
       })
       .then(function (buffer) {
+        deckBuffer = buffer;
         try {
           unsupported = scanDeck(buffer);
         } catch (e) {
@@ -212,6 +320,8 @@
       stage.appendChild(frame);
     });
     frames = Array.prototype.slice.call(stage.children);
+
+    applyTextBoxInsets();
 
     byId("renderRoot").style.display = "none";
 
