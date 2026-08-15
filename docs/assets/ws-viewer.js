@@ -190,6 +190,58 @@
     return bestD <= 8 ? best : null;
   }
 
+  function readTableCells(xml) {
+    // 每个表格 -> 每行 -> 每单元格 {L,R,T,B}（EMU 未换算）
+    var tables = [];
+    var reT = /<a:tbl>[\s\S]*?<\/a:tbl>/g;
+    var mT;
+    while ((mT = reT.exec(xml))) {
+      var seg = mT[0];
+      var rows = [];
+      var reR = /<a:tr\b[^>]*>[\s\S]*?<\/a:tr>/g;
+      var mR;
+      while ((mR = reR.exec(seg))) {
+        var row = [];
+        var reC = /<a:tc\b[^>]*>[\s\S]*?<\/a:tc>/g;
+        var mC;
+        while ((mC = reC.exec(mR[0]))) {
+          var tcp = /<a:tcPr\b([^>]*)\/?>/.exec(mC[0]);
+          var attrs = {};
+          if (tcp) {
+            var ra = /([\w]+)="([\-0-9]+)"/g;
+            var mm;
+            while ((mm = ra.exec(tcp[1]))) attrs[mm[1]] = parseInt(mm[2], 10);
+          }
+          var L = attrs.marL !== undefined ? attrs.marL : 91440;
+          var R = attrs.marR !== undefined ? attrs.marR : 91440;
+          var T = attrs.marT !== undefined ? attrs.marT : 45720;
+          var B = attrs.marB !== undefined ? attrs.marB : 45720;
+          row.push({ L: L, R: R, T: T, B: B });
+        }
+        rows.push(row);
+      }
+      tables.push(rows);
+    }
+    return tables;
+  }
+
+  function applyTableCellPadding(tables, frame, f) {
+    if (!tables.length) return;
+    var tblEls = frame.querySelectorAll("table");
+    for (var t = 0; t < tblEls.length && t < tables.length; t++) {
+      var src = tables[t];
+      var trs = tblEls[t].querySelectorAll("tr");
+      for (var r = 0; r < Math.min(trs.length, src.length); r++) {
+        var cds = trs[r].querySelectorAll("td");
+        for (var c = 0; c < Math.min(cds.length, src[r].length); c++) {
+          var cell = cds[c];
+          var margin = src[r][c];
+          cell.style.padding = margin.T * f + "px " + margin.R * f + "px " + margin.B * f + "px " + margin.L * f + "px";
+        }
+      }
+    }
+  }
+
   function applyTextBoxInsets() {
     if (!deckBuffer || !frames.length) return;
     var f = 96 / 914400;
@@ -203,6 +255,7 @@
       });
 
       var insetsBySlide = [];
+      var tablesBySlide = [];
       var entries = [];
       if (typeof zip.forEach === "function") {
         zip.forEach(function (path, file) {
@@ -218,10 +271,14 @@
         if (!m) return;
         var idx = order.length ? byBase[m[1]] : parseInt(m[1].replace("slide", ""), 10) - 1;
         if (idx < 0) return;
-        insetsBySlide[idx] = readShapeInsets(pair[1].asText(), f);
+        var xml = pair[1].asText();
+        insetsBySlide[idx] = readShapeInsets(xml, f);
+        tablesBySlide[idx] = readTableCells(xml);
       });
 
       frames.forEach(function (frame, idx) {
+        applyTableCellPadding(tablesBySlide[idx], frame, f);
+
         var shapes = insetsBySlide[idx];
         if (!shapes || !shapes.length) return;
         var blocks = frame.querySelectorAll(".block");
