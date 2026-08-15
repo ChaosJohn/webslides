@@ -5,42 +5,42 @@ import { join, dirname } from "node:path";
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 const docsDir = join(scriptsDir, "..", "docs");
 
-const SKIP = new Set([
-  "manifest.json",
+const ROOT_HIDDEN = new Set([
   "index.html",
   "viewer.html",
+  "manifest.json",
   "CNAME",
   ".nojekyll",
   "assets",
 ]);
 
-const TYPE_ORDER = { pptx: 0, html: 1 };
+function build(dir) {
+  const entries = readdirSync(dir, { withFileTypes: true })
+    .map((e) => ({ name: e.name, isDir: e.isDirectory() }))
+    .sort((a, b) => {
+      if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
+      return a.name.localeCompare(b.name, "zh-Hans-CN");
+    });
 
-const decks = [];
-for (const entry of readdirSync(docsDir, { withFileTypes: true })) {
-  if (!entry.isFile()) continue;
-  if (SKIP.has(entry.name)) continue;
-  if (!entry.name.endsWith(".pptx") && !entry.name.endsWith(".html")) continue;
-
-  const stats = statSync(join(docsDir, entry.name));
-  const type = entry.name.endsWith(".pptx") ? "pptx" : "html";
-  decks.push({
-    file: entry.name,
-    type,
-    size: stats.size,
-    modified: stats.mtime.toISOString(),
-  });
+  return entries
+    .filter((e) => !ROOT_HIDDEN.has(e.name))
+    .map((e) => {
+      const full = join(dir, e.name);
+      if (e.isDir) {
+        return { name: e.name, type: "dir", modified: statSync(full).mtime.toISOString(), children: build(full) };
+      }
+      const st = statSync(full);
+      return { name: e.name, type: "file", size: st.size, modified: st.mtime.toISOString() };
+    });
 }
-
-decks.sort((a, b) => {
-  const t = TYPE_ORDER[a.type] - TYPE_ORDER[b.type];
-  return t !== 0 ? t : a.file.localeCompare(b.file);
-});
 
 const manifest = {
   generated: new Date().toISOString(),
-  decks,
+  tree: build(docsDir),
 };
 
 writeFileSync(join(docsDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
-console.log(`manifest.json updated: ${decks.length} deck(s) (${decks.map((d) => d.file).join(", ") || "none"})`);
+
+const count = (nodes) =>
+  nodes.reduce((n, x) => n + (x.type === "dir" ? count(x.children || []) : 1), 0);
+console.log(`manifest.json updated: ${count(manifest.tree)} file(s) in tree`);

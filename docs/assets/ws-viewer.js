@@ -20,10 +20,18 @@
 
   function sanitize(raw) {
     if (!raw) return "";
-    var f = String(raw).replace(/[?#].*$/, "").trim();
-    f = String(f).split(/[\\/]/).pop();
-    if (!f || f === "." || f === "..") return "";
-    return f;
+    var f = String(raw).split(/[?#]/)[0].trim();
+    if (/^[a-zA-Z][a-zA-Z0-9+.\-]*:/.test(f)) return "";
+    f = f.replace(/\\/g, "/");
+    var parts = f.split("/");
+    var out = [];
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (p === "" || p === "." || p === "..") return "";
+      out.push(p);
+    }
+    if (!out.length) return "";
+    return out.join("/");
   }
 
   function basename(file) {

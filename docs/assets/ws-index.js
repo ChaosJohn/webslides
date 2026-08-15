@@ -1,6 +1,31 @@
 (function () {
   "use strict";
 
+  var PREVIEWABLE_DIRECT = ["png", "jpg", "jpeg", "gif", "svg", "webp", "pdf", "txt", "md"];
+  var VIEWER_TYPES = ["pptx", "pptm"];
+
+  function extOf(name) {
+    var i = name.lastIndexOf(".");
+    return i === -1 ? "" : name.slice(i + 1).toLowerCase();
+  }
+
+  function previewKind(name) {
+    var ext = extOf(name);
+    if (VIEWER_TYPES.indexOf(ext) !== -1) return "viewer";
+    if (ext === "html" || ext === "htm") return "direct";
+    if (PREVIEWABLE_DIRECT.indexOf(ext) !== -1) return "direct";
+    return null;
+  }
+
+  function encodePath(path) {
+    return path
+      .split("/")
+      .map(function (s) {
+        return encodeURIComponent(s);
+      })
+      .join("/");
+  }
+
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -20,101 +45,105 @@
     );
   }
 
-  function basename(file) {
-    return file.replace(/\.[^.]+$/, "");
+  function mkEl(tag, cls, text) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text !== undefined) el.textContent = text;
+    return el;
   }
 
-  function buildCard(deck) {
-    var card = document.createElement("div");
-    card.className = "ws-card";
+  function buildRow(fileRow, path) {
+    var row = mkEl("div", "ws-file");
 
-    var name = document.createElement("div");
-    name.className = "name";
-    name.textContent = basename(deck.file);
+    var ico = mkEl("span", "ws-ico", "\uD83D\uDCC4");
+    var name = mkEl("span", "ws-name", fileRow.name);
+    name.title = path;
 
-    var meta = document.createElement("div");
-    meta.className = "meta";
-    meta.innerHTML = "<span>" + formatSize(deck.size) + "</span><span>" + formatDate(deck.modified) + "</span>";
+    var meta = mkEl("span", "ws-meta");
+    var sizeSpan = mkEl("span", "", formatSize(fileRow.size));
+    var dateSpan = mkEl("span", "", formatDate(fileRow.modified));
+    meta.appendChild(sizeSpan);
+    meta.appendChild(dateSpan);
 
-    var actions = document.createElement("div");
-    actions.className = "actions";
+    var acts = mkEl("div", "ws-acts");
 
-    if (deck.type === "pptx") {
-      var viewBtn = document.createElement("a");
-      viewBtn.className = "ws-btn primary";
-      viewBtn.href = "./viewer.html?doc=" + encodeURIComponent(deck.file);
-      viewBtn.target = "_blank";
-      viewBtn.rel = "noopener";
-      viewBtn.textContent = "在线浏览";
-
-      var dlBtn = document.createElement("a");
-      dlBtn.className = "ws-btn ghost";
-      dlBtn.href = "./" + deck.file;
-      dlBtn.target = "_blank";
-      dlBtn.rel = "noopener";
-      dlBtn.textContent = "下载原件";
-
-      actions.appendChild(viewBtn);
-      actions.appendChild(dlBtn);
-    } else {
-      var openBtn = document.createElement("a");
-      openBtn.className = "ws-btn primary";
-      openBtn.href = "./" + deck.file;
-      openBtn.target = "_blank";
-      openBtn.rel = "noopener";
-      openBtn.textContent = "打开查看";
-      actions.appendChild(openBtn);
+    var kind = previewKind(fileRow.name);
+    if (kind) {
+      var preview = mkEl("a", "ws-link preview", "\u5728\u7EBF\u9884\u89C8");
+      preview.href = kind === "viewer" ? "./viewer.html?doc=" + encodePath(path) : "./" + encodePath(path);
+      preview.target = "_blank";
+      preview.rel = "noopener";
+      acts.appendChild(preview);
     }
 
-    card.appendChild(name);
-    card.appendChild(meta);
-    card.appendChild(actions);
-    return card;
+    var dl = mkEl("a", "ws-link dl", "\u4E0B\u8F7D");
+    dl.href = "./" + encodePath(path);
+    dl.setAttribute("download", fileRow.name);
+    acts.appendChild(dl);
+
+    row.appendChild(ico);
+    row.appendChild(name);
+    row.appendChild(meta);
+    row.appendChild(acts);
+    return row;
+  }
+
+  function buildTree(container, nodes, basePath, depth) {
+    var ul = mkEl("ul", "ws-tree");
+    ul.style.setProperty("--depth", depth);
+
+    nodes.forEach(function (node) {
+      var path = basePath ? basePath + "/" + node.name : node.name;
+      var li = document.createElement("li");
+      li.className = node.type === "dir" ? "ws-dir-node" : "ws-file-node";
+
+      if (node.type === "dir") {
+        var dir = mkEl("div", "ws-dir");
+        dir.title = path;
+        var chev = mkEl("span", "ws-chev", "\u203A");
+        var ico = mkEl("span", "ws-ico", "\uD83D\uDCC1");
+        var name = mkEl("span", "ws-name", node.name);
+        var cnt = mkEl("span", "ws-meta", String(node.children.length) + " 项");
+        dir.appendChild(chev);
+        dir.appendChild(ico);
+        dir.appendChild(name);
+        dir.appendChild(cnt);
+
+        var kidsWrap = mkEl("div", "ws-kids");
+        buildTree(kidsWrap, node.children, path, depth + 1);
+
+        dir.addEventListener("click", function () {
+          dir.classList.toggle("open");
+        });
+
+        li.appendChild(dir);
+        li.appendChild(kidsWrap);
+      } else {
+        li.appendChild(buildRow(node, path));
+      }
+
+      ul.appendChild(li);
+    });
+
+    container.appendChild(ul);
   }
 
   function render(manifest) {
-    var decks = manifest.decks || [];
-
-    var pptxDecks = decks.filter(function (d) {
-      return d.type === "pptx";
-    });
-    var htmlDecks = decks.filter(function (d) {
-      return d.type === "html";
-    });
-
-    document.getElementById("wsCountPptx").textContent = "共 " + pptxDecks.length + " 份";
-    document.getElementById("wsCountHtml").textContent = "共 " + htmlDecks.length + " 份";
-
-    var pptxGrid = document.getElementById("wsGridPptx");
-    var htmlGrid = document.getElementById("wsGridHtml");
-
-    if (!pptxDecks.length) {
-      pptxGrid.innerHTML = '<p style="color:#8a8f96;font-size:13px;">暂无 PPT 文件。</p>';
+    var root = document.getElementById("wsTree");
+    root.innerHTML = "";
+    var tree = manifest.tree || [];
+    if (!tree.length) {
+      document.getElementById("wsEmpty").hidden = false;
+      return;
     }
-    pptxDecks.forEach(function (d) {
-      pptxGrid.appendChild(buildCard(d));
-    });
-
-    if (!htmlDecks.length) {
-      htmlGrid.innerHTML = '<p style="color:#8a8f96;font-size:13px;">暂无 HTML 幻灯片。</p>';
-    }
-    htmlDecks.forEach(function (d) {
-      htmlGrid.appendChild(buildCard(d));
-    });
-
-    document.getElementById("wsSummary").textContent =
-      "索引生成时间：" + formatDate(manifest.generated) + "（由 GitHub Actions 自动更新，往 docs 目录加入新的 .pptx / .html 后自动同步列表）";
+    buildTree(root, tree, "", 0);
   }
 
   function showError(err) {
-    var pptxGrid = document.getElementById("wsGridPptx");
-    var htmlGrid = document.getElementById("wsGridHtml");
-    var msg =
-      "无法加载 <code>manifest.json</code>（" + err + "）。请确认已经 push 代码，且 GitHub Actions 工作流 <code>Generate deck index</code> 已成功执行并提交了 manifest.json。";
-    pptxGrid.innerHTML = "<p style='color:#b33a3a;font-size:13px;'>" + msg + "</p>";
-    htmlGrid.style.display = "none";
-    document.getElementById("wsCountPptx").textContent = "";
-    document.getElementById("wsCountHtml").textContent = "";
+    var root = document.getElementById("wsTree");
+    root.innerHTML = "";
+    var p = mkEl("p", "ws-empty", "无法加载文件清单（" + (err || "未知错误") + "）。请先运行 scripts/generate-manifest.mjs 生成 manifest.json。");
+    root.appendChild(p);
   }
 
   fetch("./manifest.json", { cache: "no-cache" })
@@ -124,6 +153,6 @@
     })
     .then(render)
     .catch(function (err) {
-      showError(err.message || String(err));
+      showError(err && err.message);
     });
 })();

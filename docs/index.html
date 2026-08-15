@@ -4,30 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache">
-<title>WebSlides · 幻灯片目录</title>
-<link rel="stylesheet" href="./assets/ws-style.css?v=670b45eb15">
+<title>WebSlides</title>
+<link rel="stylesheet" href="./assets/ws-style.css?v=1">
 </head>
 <body>
 <main class="ws-index">
   <header>
-    <h1>WebSlides · 幻灯片目录</h1>
-    <p>在浏览器中直接浏览 docs 目录下的 PPT 演示文稿与 HTML 幻灯片。</p>
-    <div class="rule"></div>
+    <h1>WebSlides</h1>
   </header>
 
-  <section class="ws-section" id="wsSectionPptx">
-    <h2>PPT 演示文稿 <span class="count" id="wsCountPptx"></span></h2>
-    <div class="ws-grid" id="wsGridPptx"></div>
-  </section>
-
-  <section class="ws-section" id="wsSectionHtml">
-    <h2>HTML 幻灯片 <span class="count" id="wsCountHtml"></span></h2>
-    <div class="ws-grid" id="wsGridHtml"></div>
-  </section>
-
-  <p class="ws-summary" id="wsSummary"></p>
+  <div class="ws-treeroot" id="wsTree"></div>
+  <p class="ws-empty" id="wsEmpty" hidden>暂无文件。</p>
 </main>
 
-<script src="./assets/ws-index.js?v=670b45eb15"></script>
+<script src="./assets/ws-index.js?v=1"></script>
 </body>
 </html>

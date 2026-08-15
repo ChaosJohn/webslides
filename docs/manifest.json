@@ -1,17 +1,17 @@
 {
-  "generated": "2026-08-15T14:29:25.958Z",
-  "decks": [
+  "generated": "2026-08-15T15:31:31.192Z",
+  "tree": [
     {
-      "file": "APIKG4SYN_Overview_and_Evaluation.pptx",
-      "type": "pptx",
-      "size": 53770,
-      "modified": "2026-08-15T14:29:21.610Z"
+      "name": "APIKG4SYN_Overview_and_Evaluation.html",
+      "type": "file",
+      "size": 31517,
+      "modified": "2026-08-15T14:29:10.722Z"
     },
     {
-      "file": "APIKG4SYN_Overview_and_Evaluation.html",
-      "type": "html",
-      "size": 31517,
-      "modified": "2026-08-15T14:29:21.610Z"
+      "name": "APIKG4SYN_Overview_and_Evaluation.pptx",
+      "type": "file",
+      "size": 53770,
+      "modified": "2026-08-15T10:17:36.866Z"
     }
   ]
 }
