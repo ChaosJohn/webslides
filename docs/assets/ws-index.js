@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  var PREVIEWABLE_DIRECT = ["png", "jpg", "jpeg", "gif", "svg", "webp", "pdf", "txt", "md"];
+  var PREVIEWABLE_DIRECT = ["png", "jpg", "jpeg", "gif", "svg", "webp", "pdf", "txt"];
+  var PREVIEWABLE_MD = ["md", "markdown"];
   var VIEWER_TYPES = ["pptx", "pptm"];
 
   function extOf(name) {
@@ -14,6 +15,7 @@
     if (VIEWER_TYPES.indexOf(ext) !== -1) return "viewer";
     if (ext === "html" || ext === "htm") return "direct";
     if (PREVIEWABLE_DIRECT.indexOf(ext) !== -1) return "direct";
+    if (PREVIEWABLE_MD.indexOf(ext) !== -1) return "md";
     return null;
   }
 
@@ -104,7 +106,12 @@
     var kind = previewKind(fileRow.name);
     if (kind) {
       var preview = mkEl("a", "ws-link preview", "\u5728\u7EBF\u9884\u89C8");
-      preview.href = kind === "viewer" ? "./viewer.html?doc=" + encodePath(path) : "./" + encodePath(path);
+      preview.href =
+        kind === "viewer"
+          ? "./viewer.html?doc=" + encodePath(path)
+          : kind === "md"
+          ? "./mdpreview.html?doc=" + encodePath(path)
+          : "./" + encodePath(path);
       preview.target = "_blank";
       preview.rel = "noopener";
       acts.appendChild(preview);

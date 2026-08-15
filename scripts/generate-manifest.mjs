@@ -8,6 +8,7 @@ const docsDir = join(scriptsDir, "..", "docs");
 const ROOT_HIDDEN = new Set([
   "index.html",
   "viewer.html",
+  "mdpreview.html",
   "manifest.json",
   "CNAME",
   ".nojekyll",

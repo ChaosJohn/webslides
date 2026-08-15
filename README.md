@@ -4,7 +4,8 @@
 
 ## 浏览方式
 
-- **首页**：https://slides.99se.cn/ 展示 `docs/` 的文件树。支持在线预览的类型带「在线预览」按钮（.pptx/.pptm 走查看器；.html 及图片/PDF/文本等浏览器原生可打开的类型直接打开），其余文件仅提供「下载」；所有文件均可下载。站点实现文件（index.html、viewer.html、manifest.json、assets/、CNAME 等）不会出现在文件树中。
+- **首页**：https://slides.99se.cn/ 展示 `docs/` 的文件树。支持在线预览的类型带「在线预览」按钮（.pptx/.pptm 走 pptx 查看器；.md/.markdown 走 Markdown 预览页；.html 及图片/PDF/文本等浏览器原生可打开的类型直接打开），其余文件仅提供「下载」；所有文件均可下载。站点实现文件（index.html、viewer.html、mdpreview.html、manifest.json、assets/、CNAME 等）不会出现在文件树中。
+- **Markdown 预览**：`mdpreview.html?doc=<相对路径>.md`，支持 GitHub 风格表格/任务清单/删除线/自动链接、代码块语法高亮（highlight.js）、LaTeX 数学公式（KaTeX）；渲染后经 DOMPurify 清洗（放行常见 iframe 内嵌）。页面提供「原文」「下载」。
 - **查看器**：`viewer.html?doc=<相对路径>.pptx`（如 `viewer.html?doc=dir/a.pptx`），支持：
   - 键盘：`←` `→` 翻页、`Space` 下一页、`Home`/`End` 跳转首末页、`F` 全屏、`Esc` 退出全屏
   - 底部缩略图导航栏，点击跳页
@@ -48,10 +49,12 @@ GitHub Pages 会对所有静态文件返回 `Cache-Control: max-age=600`（10 �
 docs/
   index.html               # 文件树首页
   viewer.html              # PPT 查看器
+  mdpreview.html           # Markdown 预览页
   manifest.json            # 文件树清单（由 GitHub Actions 自动生成，递归结构）
   assets/ws-style.css      # 共享样式
   assets/ws-index.js       # 首页逻辑
-  assets/ws-viewer.js      # 查看器逻辑
+  assets/ws-viewer.js      # PPT 查看器逻辑
+  assets/ws-mdviewer.js    # Markdown 预览逻辑
   ...                      # 待托管的文件（可放子目录，会自动递归进文件树）
 scripts/generate-manifest.mjs    # 生成 manifest.json 的脚本
 scripts/bump-asset-version.mjs   # 按资源内容哈希自动更新版本号
