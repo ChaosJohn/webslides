@@ -78,6 +78,14 @@
     '<span class="ws-folder" aria-hidden="true"><svg viewBox="0 0 24 20" width="21" height="17">' +
     '<path d="M2 5a2 2 0 0 1 2-2h5l2.2 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" fill="currentColor"/></svg></span>';
 
+  var ICON_EYE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+  var ICON_DOWNLOAD =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
   function mkEl(tag, cls, text) {
     var el = document.createElement(tag);
     if (cls) el.className = cls;
@@ -105,7 +113,10 @@
 
     var kind = previewKind(fileRow.name);
     if (kind) {
-      var preview = mkEl("a", "ws-link preview", "\u5728\u7EBF\u9884\u89C8");
+      var preview = mkEl("a", "ws-link preview icon");
+      preview.innerHTML = ICON_EYE;
+      preview.setAttribute("aria-label", "在线预览");
+      preview.title = "在线预览";
       preview.href =
         kind === "viewer"
           ? "./viewer.html?doc=" + encodePath(path)
@@ -117,7 +128,10 @@
       acts.appendChild(preview);
     }
 
-    var dl = mkEl("a", "ws-link dl", "\u4E0B\u8F7D");
+    var dl = mkEl("a", "ws-link dl icon");
+    dl.innerHTML = ICON_DOWNLOAD;
+    dl.setAttribute("aria-label", "下载");
+    dl.title = "下载";
     dl.href = "./" + encodePath(path);
     dl.setAttribute("download", fileRow.name);
     acts.appendChild(dl);

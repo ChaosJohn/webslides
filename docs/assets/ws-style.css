@@ -197,6 +197,17 @@ a:hover {
   background: rgba(230, 126, 34, 0.08);
 }
 
+.ws-link.icon {
+  padding: 6px;
+  line-height: 0;
+}
+
+.ws-link.icon svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+}
+
 .ws-kids {
   display: none;
 }
