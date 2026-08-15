@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>APIKG4SYN 方法解读与评价</title>
 <style>
   :root{
@@ -10,12 +10,13 @@
     --dark:#333; --gray:#8A8F96; --bluebg:#E8F0F8; --green:#2E7D32; --red:#B33A3A;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{height:100%;}
+  html{height:100%; overflow:hidden;}
   body{
+    height:100%; overflow:hidden; overscroll-behavior:none;
     font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
-    background:#0d1b2a; color:var(--dark); overflow:hidden;
+    background:#0d1b2a; color:var(--dark);
   }
-  .deck{width:100vw; height:100vh; position:relative;}
+  .deck{position:fixed; inset:0; overflow:hidden;}
   .slide{
     position:absolute; left:50%; top:50%;
     width:calc(100vh * 16 / 9); height:100vh;
@@ -138,6 +139,29 @@
   body.idle .count{opacity:.12;}
   .progress{position:fixed; top:0; left:0; height:.5vh; background:var(--orange); z-index:60;
     transition:width .3s ease;}
+
+  /* ---- 移动端导航：底部居中胶囊（两键相邻、便于拇指操作） ---- */
+  .mnav{
+    position:fixed; left:50%; bottom:calc(2.6vh + env(safe-area-inset-bottom, 0px));
+    transform:translateX(-50%); z-index:55;
+    display:none; align-items:center; gap:3vw;
+    background:rgba(16,42,67,.88); border:1px solid rgba(255,255,255,.18);
+    border-radius:99px; padding:1vh 4vw; box-shadow:0 4px 14px rgba(0,0,0,.35);
+    backdrop-filter:blur(6px); -webkit-tap-highlight-color:transparent;
+  }
+  .mnav button{
+    width:6.2vh; height:6.2vh; border:none; border-radius:50%;
+    background:var(--orange); color:#fff; font-size:3.4vh; font-weight:700;
+    cursor:pointer; line-height:1; display:flex; align-items:center; justify-content:center;
+    touch-action:manipulation;
+  }
+  .mnav button:active{transform:scale(.9);}
+  .mnav span{color:#fff; font-size:2vh; letter-spacing:.08em; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  @media (max-width: 640px){
+    .navbtn{display:none;}
+    .count{display:none;}
+    .mnav{display:flex;}
+  }
 </style>
 </head>
 <body>
@@ -458,6 +482,11 @@
 <button class="navbtn" id="prev" aria-label="上一页">‹</button>
 <button class="navbtn" id="next" aria-label="下一页">›</button>
 <div class="count" id="count">1 / 11</div>
+<div class="mnav" id="mnav">
+  <button id="mprev" aria-label="上一页">‹</button>
+  <span id="mcount">1 / 11</span>
+  <button id="mnext" aria-label="下一页">›</button>
+</div>
 <div class="progress" id="progress"></div>
 
 <script>
@@ -466,6 +495,7 @@
   var total = slides.length;
   var cur = 0;
   var countEl = document.getElementById('count');
+  var mcountEl = document.getElementById('mcount');
   var prog = document.getElementById('progress');
 
   function fitScale(){
@@ -480,6 +510,7 @@
     cur = Math.max(0, Math.min(total-1, i));
     slides.forEach(function(s, idx){ s.classList.toggle('active', idx === cur); });
     countEl.textContent = (cur+1) + ' / ' + total;
+    mcountEl.textContent = (cur+1) + ' / ' + total;
     prog.style.width = ((cur+1)/total*100) + 'vw';
   }
   function next(){ show(cur+1); }
@@ -487,6 +518,8 @@
 
   document.getElementById('next').addEventListener('click', next);
   document.getElementById('prev').addEventListener('click', prev);
+  document.getElementById('mnext').addEventListener('click', next);
+  document.getElementById('mprev').addEventListener('click', prev);
   document.addEventListener('keydown', function(e){
     if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
     else if(e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
