@@ -45,6 +45,37 @@
     );
   }
 
+  var BADGE_COLOR = {
+    ppt: "#E67E22",
+    html: "#3B82C4",
+    img: "#2E9E5B",
+    pdf: "#D0453E",
+    md: "#2A9D8F",
+    txt: "#5F7A92",
+    other: "#55647A"
+  };
+
+  function badgeInfo(name) {
+    var i = name.lastIndexOf(".");
+    if (i === -1 || i === name.length - 1) {
+      return { text: "\uFF0B", color: BADGE_COLOR.other };
+    }
+    var ext = name.slice(i + 1).toLowerCase();
+    if (ext === "pptx" || ext === "pptm") return { text: "PPT", color: BADGE_COLOR.ppt };
+    if (ext === "html" || ext === "htm") return { text: "HTML", color: BADGE_COLOR.html };
+    if (["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "ico"].indexOf(ext) !== -1)
+      return { text: "IMG", color: BADGE_COLOR.img };
+    if (ext === "pdf") return { text: "PDF", color: BADGE_COLOR.pdf };
+    if (ext === "md") return { text: "MD", color: BADGE_COLOR.md };
+    if (["txt", "csv", "json", "yml", "yaml", "xml", "log"].indexOf(ext) !== -1)
+      return { text: "TXT", color: BADGE_COLOR.txt };
+    return { text: ext.slice(0, 4).toUpperCase(), color: BADGE_COLOR.other };
+  }
+
+  var FOLDER_SVG =
+    '<span class="ws-folder" aria-hidden="true"><svg viewBox="0 0 24 20" width="21" height="17">' +
+    '<path d="M2 5a2 2 0 0 1 2-2h5l2.2 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" fill="currentColor"/></svg></span>';
+
   function mkEl(tag, cls, text) {
     var el = document.createElement(tag);
     if (cls) el.className = cls;
@@ -55,7 +86,10 @@
   function buildRow(fileRow, path) {
     var row = mkEl("div", "ws-file");
 
-    var ico = mkEl("span", "ws-ico", "\uD83D\uDCC4");
+    var badge = mkEl("span", "ws-badge", badgeInfo(fileRow.name).text);
+    badge.style.background = badgeInfo(fileRow.name).color;
+    badge.title = fileRow.name;
+
     var name = mkEl("span", "ws-name", fileRow.name);
     name.title = path;
 
@@ -81,7 +115,7 @@
     dl.setAttribute("download", fileRow.name);
     acts.appendChild(dl);
 
-    row.appendChild(ico);
+    row.appendChild(badge);
     row.appendChild(name);
     row.appendChild(meta);
     row.appendChild(acts);
@@ -101,8 +135,9 @@
         var dir = mkEl("div", "ws-dir");
         dir.title = path;
         var chev = mkEl("span", "ws-chev", "\u203A");
-        var ico = mkEl("span", "ws-ico", "\uD83D\uDCC1");
-        var name = mkEl("span", "ws-name", node.name);
+        var ico = mkEl("span", "ws-ico");
+        ico.innerHTML = FOLDER_SVG;
+        var name = mkEl("span", "ws-name ws-name-dir", node.name);
         var cnt = mkEl("span", "ws-meta", String(node.children.length) + " 项");
         dir.appendChild(chev);
         dir.appendChild(ico);

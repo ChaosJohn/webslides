@@ -88,6 +88,7 @@ a:hover {
 
 .ws-file {
   color: #e6eef7;
+  align-items: flex-start;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -105,19 +106,43 @@ a:hover {
 }
 
 .ws-ico {
-  width: 18px;
-  text-align: center;
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
-  filter: grayscale(0.2);
+}
+
+.ws-folder {
+  color: #e9b44c;
+  display: inline-flex;
+  margin-top: 1px;
+}
+
+.ws-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  flex: 0 0 auto;
+  user-select: none;
 }
 
 .ws-name {
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
   word-break: break-all;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
 }
 
 .ws-name.ws-name-dir {
