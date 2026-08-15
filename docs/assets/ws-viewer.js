@@ -170,7 +170,8 @@
         l: L * f,
         r: R * f,
         t: T * f,
-        b: B * f
+        b: B * f,
+        autoFit: /<a:spAutoFit\b/.test(seg)
       });
     }
     return shapes;
@@ -316,6 +317,10 @@
                 }
               }
             }
+          }
+
+          if (shape.autoFit && blk.querySelectorAll(".slide-prgrph").length === 1) {
+            blk.style.justifyContent = "center";
           }
         }
       });
