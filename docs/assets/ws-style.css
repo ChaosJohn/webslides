@@ -294,6 +294,16 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+.ws-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+}
+
 .ws-toolbar .ws-btn {
   height: 34px;
   padding: 0 12px;
