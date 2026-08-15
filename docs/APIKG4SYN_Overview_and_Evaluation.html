@@ -17,15 +17,15 @@
   }
   .deck{width:100vw; height:100vh; position:relative;}
   .slide{
-    position:absolute; inset:0; margin:auto;
-    width:min(100vw, calc(100vh * 16 / 9));
-    height:min(100vh, calc(100vw * 9 / 16));
+    position:absolute; left:50%; top:50%;
+    width:calc(100vh * 16 / 9); height:100vh;
     background:var(--white); border-radius:6px; overflow:hidden;
-    opacity:0; visibility:hidden; transform:scale(.97);
-    transition:opacity .35s ease, transform .35s ease;
+    opacity:0; visibility:hidden;
+    transform:translate(-50%,-50%) scale(var(--s,1));
+    transition:opacity .35s ease;
     display:flex; flex-direction:column; padding:3.2vh 3vw;
   }
-  .slide.active{opacity:1; visibility:visible; transform:scale(1);}
+  .slide.active{opacity:1; visibility:visible;}
 
   /* ---- 通用 ---- */
   .ctitle{font-size:2.5vh; font-weight:700; color:var(--navy);}
@@ -467,6 +467,14 @@
   var cur = 0;
   var countEl = document.getElementById('count');
   var prog = document.getElementById('progress');
+
+  function fitScale(){
+    var s = Math.min(window.innerWidth / (window.innerHeight * 16 / 9), 1);
+    document.documentElement.style.setProperty('--s', s);
+  }
+  fitScale();
+  window.addEventListener('resize', fitScale);
+  window.addEventListener('orientationchange', function(){ setTimeout(fitScale, 250); });
 
   function show(i){
     cur = Math.max(0, Math.min(total-1, i));
