@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PPT 在线浏览</title>
+<link rel="stylesheet" href="./assets/ws-style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/css/pptxjs.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/css/nv.d3.min.css">
+</head>
+<body>
+<div class="ws-viewer" id="wsViewer">
+
+  <div id="fullscreenRoot" class="ws-fullscreen-root">
+    <header class="ws-toolbar">
+      <a class="home" href="./" title="返回幻灯片目录">‹ 目录</a>
+      <div class="title" id="wsTitle">PPT 在线浏览</div>
+      <div class="actions">
+        <button class="nav-btn" id="wsPrev" title="上一页（←）">‹</button>
+        <span class="ws-counter" id="wsCounter">&ndash; / &ndash;</span>
+        <button class="nav-btn" id="wsNext" title="下一页（→）">›</button>
+        <button class="ws-btn" id="wsFull" title="全屏（F）">⛶</button>
+        <a class="ws-btn" id="wsDownload" title="若网页渲染与原文有差异，可下载原件查看" href="#">⬇ <span class="txt">原件</span></a>
+      </div>
+    </header>
+
+    <main class="ws-stage" id="wsStage"></main>
+
+    <div class="ws-warn" id="wsWarn" hidden>
+      <span class="ico">!</span>
+      <span id="wsWarnText"></span>
+      <a href="#" id="wsWarnLink">下载原件查看</a>
+    </div>
+  </div>
+
+  <div class="ws-rail-wrap" id="wsRailWrap" hidden>
+    <nav class="ws-rail" id="wsRail"></nav>
+  </div>
+
+  <div class="ws-render-root" id="renderRoot" aria-hidden="true"></div>
+
+  <div class="ws-overlay" id="wsOverlay">
+    <div class="ws-spinner" id="wsSpinner"></div>
+    <div class="msg" id="wsMsg">正在加载并渲染幻灯片…</div>
+    <div class="hint" id="wsHint"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/jquery-1.11.3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/filereader.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/nv.d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/dingbat.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/meshesha/PPTXJS@v1.21.1/js/pptxjs.min.js"></script>
+<script src="./assets/ws-viewer.js"></script>
+</body>
+</html>

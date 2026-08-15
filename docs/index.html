@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebSlides · 幻灯片目录</title>
+<link rel="stylesheet" href="./assets/ws-style.css">
+</head>
+<body>
+<main class="ws-index">
+  <header>
+    <h1>WebSlides · 幻灯片目录</h1>
+    <p>在浏览器中直接浏览 docs 目录下的 PPT 演示文稿与 HTML 幻灯片。</p>
+    <div class="rule"></div>
+  </header>
+
+  <section class="ws-section" id="wsSectionPptx">
+    <h2>PPT 演示文稿 <span class="count" id="wsCountPptx"></span></h2>
+    <div class="ws-grid" id="wsGridPptx"></div>
+  </section>
+
+  <section class="ws-section" id="wsSectionHtml">
+    <h2>HTML 幻灯片 <span class="count" id="wsCountHtml"></span></h2>
+    <div class="ws-grid" id="wsGridHtml"></div>
+  </section>
+
+  <p class="ws-summary" id="wsSummary"></p>
+</main>
+
+<script src="./assets/ws-index.js"></script>
+</body>
+</html>
