@@ -294,8 +294,6 @@
           if (!shape) continue;
           blk.style.paddingLeft = shape.l + "px";
           blk.style.paddingRight = shape.r + "px";
-          blk.style.paddingTop = shape.t + "px";
-          blk.style.paddingBottom = shape.b + "px";
 
           if (shape.l > 0 || shape.r > 0) {
             var cw = w - shape.l - shape.r;
