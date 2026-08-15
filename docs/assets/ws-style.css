@@ -123,9 +123,9 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
+  width: 40px;
   height: 22px;
-  padding: 0 6px;
+  padding: 0;
   border-radius: 5px;
   color: #fff;
   font-size: 10px;
