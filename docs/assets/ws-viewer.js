@@ -296,6 +296,29 @@
           blk.style.paddingRight = shape.r + "px";
           blk.style.paddingTop = shape.t + "px";
           blk.style.paddingBottom = shape.b + "px";
+
+          if (shape.l > 0 || shape.r > 0) {
+            var cw = w - shape.l - shape.r;
+            if (cw < 4) cw = 4;
+            var prgs = blk.querySelectorAll(".slide-prgrph");
+            for (var i2 = 0; i2 < prgs.length; i2++) {
+              var p = prgs[i2];
+              var old = parseFloat(p.style.width);
+              var ref = isNaN(old) ? w : old;
+              p.style.width = cw + "px";
+              var kids = p.children;
+              for (var c2 = 0; c2 < kids.length; c2++) {
+                var kid = kids[c2];
+                var sw = kid.style.width;
+                if (!sw || sw === "inherit") continue;
+                var sv = parseFloat(sw);
+                if (isNaN(sv)) continue;
+                if (Math.abs(sv - ref) < 0.5 || Math.abs(sv - w) < 0.5) {
+                  kid.style.width = cw + "px";
+                }
+              }
+            }
+          }
         }
       });
     } catch (e) {
