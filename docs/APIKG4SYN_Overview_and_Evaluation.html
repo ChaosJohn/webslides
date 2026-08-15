@@ -8,6 +8,7 @@
   :root{
     --navy:#102A43; --orange:#E67E22; --light:#F4F6F8; --white:#fff;
     --dark:#333; --gray:#8A8F96; --bluebg:#E8F0F8; --green:#2E7D32; --red:#B33A3A;
+    --deckScale:1; --deckH:100vh;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{height:100%; overflow:hidden;}
@@ -19,10 +20,10 @@
   .deck{position:fixed; inset:0; overflow:hidden;}
   .slide{
     position:absolute; left:50%; top:50%;
-    width:calc(100vh * 16 / 9); height:100vh;
+    width:calc(var(--deckH) * 16 / 9); height:var(--deckH);
     background:var(--white); border-radius:6px; overflow:hidden;
     opacity:0; visibility:hidden;
-    transform:translate(-50%,-50%) scale(var(--s,1));
+    transform:translate(-50%,-50%) scale(var(--deckScale,1));
     transition:opacity .35s ease;
     display:flex; flex-direction:column; padding:3.2vh 3vw;
   }
@@ -498,13 +499,23 @@
   var mcountEl = document.getElementById('mcount');
   var prog = document.getElementById('progress');
 
-  function fitScale(){
-    var s = Math.min(window.innerWidth / (window.innerHeight * 16 / 9), 1);
-    document.documentElement.style.setProperty('--s', s);
+  function fitSlide(){
+    var doc = document.documentElement;
+    var w = doc.clientWidth || window.innerWidth;
+    var h = doc.clientHeight || window.innerHeight;
+    var s = Math.min(w / (h * 16 / 9), 1);
+    doc.style.setProperty('--deckScale', s);
+    doc.style.setProperty('--deckH', h + 'px');
   }
-  fitScale();
-  window.addEventListener('resize', fitScale);
-  window.addEventListener('orientationchange', function(){ setTimeout(fitScale, 250); });
+  fitSlide();
+  var fitTimer = null;
+  window.addEventListener('resize', fitSlide);
+  window.addEventListener('orientationchange', function(){ clearTimeout(fitTimer); fitTimer = setTimeout(fitSlide, 250); });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function(){
+      clearTimeout(fitTimer); fitTimer = setTimeout(fitSlide, 120);
+    });
+  }
 
   function show(i){
     cur = Math.max(0, Math.min(total-1, i));
