@@ -43,11 +43,15 @@
       var viewBtn = document.createElement("a");
       viewBtn.className = "ws-btn primary";
       viewBtn.href = "./viewer.html?doc=" + encodeURIComponent(deck.file);
+      viewBtn.target = "_blank";
+      viewBtn.rel = "noopener";
       viewBtn.textContent = "在线浏览";
 
       var dlBtn = document.createElement("a");
       dlBtn.className = "ws-btn ghost";
       dlBtn.href = "./" + deck.file;
+      dlBtn.target = "_blank";
+      dlBtn.rel = "noopener";
       dlBtn.textContent = "下载原件";
 
       actions.appendChild(viewBtn);
@@ -56,6 +60,8 @@
       var openBtn = document.createElement("a");
       openBtn.className = "ws-btn primary";
       openBtn.href = "./" + deck.file;
+      openBtn.target = "_blank";
+      openBtn.rel = "noopener";
       openBtn.textContent = "打开查看";
       actions.appendChild(openBtn);
     }
