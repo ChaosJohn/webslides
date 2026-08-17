@@ -68,12 +68,12 @@
     var parts = [];
     if (dir) parts.push(dir);
     parts.push(name);
-    var path = parts.join("/");
-    var head = path.split("/")[0];
+    var relPath = parts.join("/");
+    var head = relPath.split("/")[0];
     if (head === "app" || head === "assets" || RESERVED.has(head)) {
-      throw new Error("目标路径与站点实现/保留文件冲突：" + path);
+      throw new Error("目标路径与站点实现/保留文件冲突：" + relPath);
     }
-    return path;
+    return "docs/" + relPath;
   }
 
   function fileToBase64(file) {
@@ -166,7 +166,7 @@
     }
 
     var li = document.createElement("li");
-    li.textContent = file.name + " → docs/" + path + "  ";
+    li.textContent = file.name + " → " + path + "  ";
     resList.appendChild(li);
 
     try {
@@ -213,5 +213,55 @@
       e.preventDefault();
       handleUpload();
     }
+  });
+
+  // 拖拽选择文件
+  var dragDepth = 0;
+  var dropTarget = form;
+
+  function setDrag(on) {
+    if (on) {
+      dropTarget.classList.add("dragover");
+    } else {
+      dragDepth = 0;
+      dropTarget.classList.remove("dragover");
+    }
+  }
+
+  function isLikelyFolder(f) {
+    return f.size === 0 && !f.type;
+  }
+
+  document.addEventListener("dragover", function (e) {
+    e.preventDefault();
+  });
+  document.addEventListener("drop", function (e) {
+    e.preventDefault();
+  });
+  dropTarget.addEventListener("dragenter", function (e) {
+    e.preventDefault();
+    dragDepth++;
+    setDrag(true);
+  });
+  dropTarget.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    dragDepth--;
+    if (dragDepth <= 0) setDrag(false);
+  });
+  dropTarget.addEventListener("drop", function (e) {
+    e.preventDefault();
+    setDrag(false);
+    var dropped = Array.prototype.slice.call(e.dataTransfer.files || []);
+    if (dropped.some(isLikelyFolder)) {
+      setMsg("不支持拖拽文件夹，请展开后选择文件", "bad");
+      return;
+    }
+    var dt = new DataTransfer();
+    dropped.forEach(function (f) {
+      dt.items.add(f);
+    });
+    fileInput.files = dt.files;
+    fileInput.dataset.byDrop = "1";
+    setMsg("已拖入 " + dropped.length + " 个文件，点击「上传」开始。", "ok");
   });
 })();

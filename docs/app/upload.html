@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>上传文件</title>
-<link rel="stylesheet" href="./assets/ws-style.css?v=222ad9eeed">
+<link rel="stylesheet" href="./assets/ws-style.css?v=b59f96d7dd">
 <style>
   .up-page { max-width: 720px; margin: 0 auto; padding: 4vh max(3vw, 20px) 8vh; color: #e6eef7; }
   .up-page h1 { color: #fff; font-size: clamp(22px, 3.6vh, 30px); }
@@ -20,6 +20,8 @@
   .up-go { margin-top: 6px; background: var(--orange); border: none; color: #fff; border-radius: 8px;
     padding: 10px 22px; font-size: 14px; cursor: pointer; }
   .up-go:disabled { opacity: .55; cursor: not-allowed; }
+  .up-card.dragover { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(230,126,34,.18); }
+  .up-drop-hint { margin-top: 8px; color: #5f7388; font-size: 12.5px; }
   .up-progress { height: 6px; background: #0d1b2a; border-radius: 3px; margin-top: 14px; overflow: hidden; display: none; }
   .up-progress i { display: block; height: 100%; width: 0; background: var(--orange); transition: width .15s; }
   .up-msg { margin-top: 14px; color: #a8b8c8; font-size: 13px; }
@@ -43,8 +45,9 @@
       <input type="text" id="upDir" value="uploads" placeholder="uploads">
     </div>
     <div class="up-field">
-      <label for="upFiles">选择文件（可多选）</label>
+      <label for="upFiles">选择文件（可多选；也可直接将文件拖拽到下方卡片内）</label>
       <input type="file" id="upFiles" multiple>
+      <p class="up-drop-hint">支持点击选择 或 拖拽到此处（不支持整个文件夹）。</p>
     </div>
     <button class="up-go" id="upGo">上传</button>
     <div class="up-progress" id="upBar"><i id="upBarFill"></i></div>
@@ -61,6 +64,6 @@
   </p>
 </main>
 
-<script src="./assets/ws-upload.js?v=222ad9eeed"></script>
+<script src="./assets/ws-upload.js?v=b59f96d7dd"></script>
 </body>
 </html>
