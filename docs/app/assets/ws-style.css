@@ -862,3 +862,87 @@ a:hover {
   font-size: 12px;
   font-weight: 400;
 }
+
+/* ============================== 首页：管理工具栏 ============================== */
+.ws-admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: #16283c;
+  border: 1px solid #1e3248;
+  border-radius: 9px;
+  padding: 8px 10px;
+}
+
+.ws-admin-btn {
+  border: 1px solid #3a5572;
+  background: none;
+  color: #b9c9d8;
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.ws-admin-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.ws-admin-btn.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ws-admin-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.ws-admin-btn.danger {
+  border-color: #b33a3a;
+  color: #ffb4a0;
+}
+
+.ws-admin-btn.danger:not(:disabled):hover {
+  background: #b33a3a;
+  color: #fff;
+  border-color: #b33a3a;
+}
+
+.ws-admin-count {
+  color: #a8b8c8;
+  font-size: 12.5px;
+}
+
+.ws-admin-hint {
+  color: #ffb4a0;
+  font-size: 12.5px;
+  flex-basis: 100%;
+}
+
+.ws-admin-hint.ok { color: #7fd48c; }
+
+.ws-sel {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--orange);
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.ws-spin {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ws-spin .8s linear infinite;
+}
