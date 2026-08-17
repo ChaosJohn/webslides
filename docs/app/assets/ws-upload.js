@@ -1,9 +1,9 @@
 (function () {
   "use strict";
 
-  // 按需修改：所属仓库与默认分支
-  var OWNER = "ChaosJohn";
-  var REPO = "webslides";
+  // 所属仓库与默认分支（fork 后一般无需改这里，页面会自动推导或用 &repo= 覆盖）
+  var DEFAULT_OWNER = "ChaosJohn";
+  var DEFAULT_REPO = "webslides";
   var BRANCH = "main";
   var MAX_BYTES = 50 * 1024 * 1024;
 
@@ -17,6 +17,28 @@
     var m = new RegExp("[?&]" + key + "=([^&]*)").exec(location.search);
     return m ? decodeURIComponent(m[1]) : "";
   }
+
+  // ---------- 仓库归属解析 ----------
+  // 1) &repo=owner/repo 优先；2) 部署在 <owner>.github.io/<repo>/ 时从域名+路径推导；3) 兜底默认值
+  function resolveRepo() {
+    var ov = param("repo");
+    if (ov) {
+      var parts = ov.split("/");
+      if (parts.length === 2 && parts[0] && parts[1]) return [parts[0], parts[1]];
+    }
+    var host = location.hostname;
+    if (host.indexOf("github.io") !== -1 && host.endsWith("github.io")) {
+      var hostOwner = host.split(".")[0];
+      var seg = location.pathname.split("/").filter(Boolean);
+      var repoName = seg.length && seg[0] !== "app" ? seg[0] : DEFAULT_REPO;
+      if (hostOwner) return [hostOwner, repoName];
+    }
+    return [DEFAULT_OWNER, DEFAULT_REPO];
+  }
+
+  var repo = resolveRepo();
+  var OWNER = repo[0];
+  var REPO = repo[1];
 
   // ---------- 门禁 ----------
   var token = param("up") || sessionStorage.getItem("wsUpToken") || "";
@@ -42,6 +64,11 @@
   var pending = [];
 
   form.hidden = false;
+
+  var repoEl = byId("upRepo");
+  if (repoEl) {
+    repoEl.textContent = "上传目标仓库：" + OWNER + "/" + REPO + "（自定义域名可用 &repo=owner/repo 覆盖）";
+  }
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
@@ -318,6 +345,17 @@
     setPending(dropped);
   });
   fileInput.addEventListener("change", function () {
-    setPending(Array.prototype.slice.call(fileInput.files || []));
+    var incoming = Array.prototype.slice.call(fileInput.files || []);
+    var merged = pending.slice();
+    incoming.forEach(function (f) {
+      if (!merged.some(function (m) {
+        return m.name === f.name && m.size === f.size;
+      })) {
+        merged.push(f);
+      }
+    });
+    setPending(merged);
+    fileInput.value = "";
+    setMsg("已选择 " + merged.length + " 个文件（新选择已并入列表）。", "ok");
   });
 })();
