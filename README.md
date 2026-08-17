@@ -37,6 +37,13 @@ node scripts/publish-file.mjs <文件或目录> [--as <docs内相对路径>] [--
 - 默认提交信息为 `feat: add docs/<路径>`，可用 `--msg` 自定义；目标已存在时需 `--force`
 - 会拒绝覆盖站点实现文件（index/viewer/mdpreview/manifest/assets 等），并提示其它未提交改动
 
+**方式三：Web 页面上传（自用隐藏入口）**
+
+打开 `https://slides.99se.cn/app/upload.html?up=<Token>` 即可在浏览器里上传文件到指定目录（默认 `docs/uploads/`，可手动填子目录），上传即提交，Actions 自动刷新列表；同名文件自动覆盖。
+
+- Token：建议使用「仅本仓库 + Contents 读写 + 不限定时间久但可轮换」的 fine-grained Personal Access Token。Token 只临时存在于浏览器会话内存（sessionStorage），**不会写入代码库**，也不要把它放进任何提交。
+- **安全边界**：该页面对任何知道入口 URL 参数的人开放。前端 Token 对懂技术的人可见，请务必用最小权限 Token 并定期轮换；本功能定位为“自用”，不要用于多人生开放投稿。
+
 ## 本地预览
 
 ```bash

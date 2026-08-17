@@ -1,0 +1,217 @@
+(function () {
+  "use strict";
+
+  // 按需修改：所属仓库与默认分支
+  var OWNER = "ChaosJohn";
+  var REPO = "webslides";
+  var BRANCH = "main";
+  var MAX_BYTES = 50 * 1024 * 1024;
+
+  var RESERVED = new Set(["index.html", "viewer.html", "mdpreview.html", "upload.html", "manifest.json", "CNAME", ".nojekyll"]);
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function param(key) {
+    var m = new RegExp("[?&]" + key + "=([^&]*)").exec(location.search);
+    return m ? decodeURIComponent(m[1]) : "";
+  }
+
+  // ---------- 门禁 ----------
+  var token = param("up") || sessionStorage.getItem("wsUpToken") || "";
+  if (!token) {
+    byId("upLocked").hidden = false;
+    return;
+  }
+  sessionStorage.setItem("wsUpToken", token);
+  try {
+    history.replaceState(null, "", location.pathname);
+  } catch (e) {}
+
+  var form = byId("upForm");
+  var fileInput = byId("upFiles");
+  var dirInput = byId("upDir");
+  var goBtn = byId("upGo");
+  var resList = byId("upRes");
+  var msgEl = byId("upMsg");
+  var barWrap = byId("upBar");
+  var barFill = byId("upBarFill");
+
+  form.hidden = false;
+
+  // ---------- 工具 ----------
+  function setMsg(text, cls) {
+    msgEl.textContent = text;
+    msgEl.className = "up-msg" + (cls ? " " + cls : "");
+  }
+
+  function setBusy(on) {
+    goBtn.disabled = on;
+    barWrap.style.display = on ? "block" : "none";
+    if (!on) barFill.style.width = "0%";
+  }
+
+  function setProgress(pct) {
+    barFill.style.width = pct + "%";
+  }
+
+  function normalizeDir(raw) {
+    var d = String(raw || "").split(/[?#]/)[0].replace(/\\/g, "/").trim().replace(/^\/+|\/+$/g, "");
+    var parts = d.split("/").filter(function (s) {
+      return s && s !== "." && s !== "..";
+    });
+    return parts.join("/");
+  }
+
+  function buildTarget(name, dir) {
+    var parts = [];
+    if (dir) parts.push(dir);
+    parts.push(name);
+    var path = parts.join("/");
+    var head = path.split("/")[0];
+    if (head === "app" || head === "assets" || RESERVED.has(head)) {
+      throw new Error("目标路径与站点实现/保留文件冲突：" + path);
+    }
+    return path;
+  }
+
+  function fileToBase64(file) {
+    return new Promise(function (resolve, reject) {
+      if (file.size > MAX_BYTES) {
+        reject(new Error("文件超过 50MB 上限： " + file.name));
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(String(reader.result).split(",")[1] || "");
+      };
+      reader.onerror = function () {
+        reject(new Error("读取失败：" + file.name));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function uploadViaXhr(path, content, sha) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("PUT", "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/" + path);
+      xhr.setRequestHeader("Accept", "application/vnd.github+json");
+      xhr.setRequestHeader("Authorization", "Bearer " + token);
+      xhr.setRequestHeader("X-GitHub-Api-Version", "2022-11-28");
+      xhr.responseType = "json";
+
+      xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
+      };
+
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          var msg = (xhr.response && (xhr.response.message || xhr.response.errors && xhr.response.errors.map(function (x) { return x.message; }).join("; "))) || ("HTTP " + xhr.status);
+          reject(new Error(msg));
+        }
+      };
+      xhr.onerror = function () {
+        reject(new Error("网络错误"));
+      };
+
+      var body = { message: "feat: upload " + path + " via web", branch: BRANCH, content: content };
+      if (sha) body.sha = sha;
+      xhr.send(JSON.stringify(body));
+    });
+  }
+
+  function getFileSha(path) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "https://api.github.com/repos/" + OWNER + "/" + REPO + "/contents/" + path + "?ref=" + BRANCH);
+      xhr.setRequestHeader("Accept", "application/vnd.github+json");
+      xhr.setRequestHeader("Authorization", "Bearer " + token);
+      xhr.setRequestHeader("X-GitHub-Api-Version", "2022-11-28");
+      xhr.responseType = "json";
+      xhr.onload = function () {
+        if (xhr.status === 200 && xhr.response && xhr.response.sha) {
+          resolve(xhr.response.sha);
+        } else {
+          reject(new Error("查询已存在文件失败（HTTP " + xhr.status + "）"));
+        }
+      };
+      xhr.onerror = function () {
+        reject(new Error("网络错误"));
+      };
+      xhr.send();
+    });
+  }
+
+  function pushEntry(li, cls, text) {
+    var b = document.createElement("b");
+    b.className = cls;
+    b.textContent = text;
+    li.appendChild(b);
+  }
+
+  async function uploadOne(file, dir) {
+    var path;
+    try {
+      path = buildTarget(file.name, dir);
+    } catch (e) {
+      var li0 = document.createElement("li");
+      pushEntry(li0, "bad", "跳过");
+      li0.appendChild(document.createTextNode("  " + file.name + " — " + e.message));
+      resList.appendChild(li0);
+      return false;
+    }
+
+    var li = document.createElement("li");
+    li.textContent = file.name + " → docs/" + path + "  ";
+    resList.appendChild(li);
+
+    try {
+      var content = await fileToBase64(file);
+      setMsg("上传 " + file.name);
+      try {
+        await uploadViaXhr(path, content, null);
+      } catch (err) {
+        // 已存在 -> 取 sha 更新
+        var sha = await getFileSha(path);
+        await uploadViaXhr(path, content, sha);
+      }
+      pushEntry(li, "ok", "完成");
+      return true;
+    } catch (err) {
+      pushEntry(li, "bad", "失败");
+      var note = document.createTextNode(" — " + (err && err.message || String(err)));
+      li.appendChild(note);
+      return false;
+    }
+  }
+
+  async function handleUpload() {
+    var dir = normalizeDir(dirInput.value);
+    var files = Array.prototype.slice.call(fileInput.files || []);
+    if (!files.length) {
+      setMsg("请先选择文件", "bad");
+      return;
+    }
+    setBusy(true);
+    setMsg("");
+    resList.innerHTML = "";
+    var okN = 0;
+    for (var i = 0; i < files.length; i++) {
+      if (await uploadOne(files[i], dir)) okN++;
+    }
+    setBusy(false);
+    setMsg("完成：" + okN + "/" + files.length + " 个文件；文件列表稍后自动更新（含同名覆盖）。", okN === files.length ? "ok" : "bad");
+  }
+
+  goBtn.addEventListener("click", handleUpload);
+  dirInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleUpload();
+    }
+  });
+})();
