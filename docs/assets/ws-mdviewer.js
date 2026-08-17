@@ -59,7 +59,7 @@
       ADD_TAGS: ["iframe"],
       ADD_ATTR: ["allow", "allowfullscreen", "referrerpolicy", "frameborder"]
     });
-    byId("mdContent").innerHTML = clean;
+    byId("mdContent").innerHTML = '<div class="md-wrap">' + clean + "</div>";
   }
 
   function enhance() {

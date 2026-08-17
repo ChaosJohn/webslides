@@ -566,10 +566,9 @@ a:hover {
   padding: 4vh max(3vw, 20px) 9vh;
 }
 
-.md-content > * {
-  max-width: 860px;
-  margin-left: auto;
-  margin-right: auto;
+.md-wrap {
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .md-content h1, .md-content h2, .md-content h3, .md-content h4, .md-content h5, .md-content h6 {
