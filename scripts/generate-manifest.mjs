@@ -13,6 +13,7 @@ const ROOT_HIDDEN = new Set([
   "CNAME",
   ".nojekyll",
   "assets",
+  "app",
 ]);
 
 function build(dir) {
@@ -40,7 +41,7 @@ const manifest = {
   tree: build(docsDir),
 };
 
-writeFileSync(join(docsDir, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
+writeFileSync(join(docsDir, "app", "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 
 const count = (nodes) =>
   nodes.reduce((n, x) => n + (x.type === "dir" ? count(x.children || []) : 1), 0);

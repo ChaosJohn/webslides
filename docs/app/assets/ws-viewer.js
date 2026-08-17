@@ -353,7 +353,7 @@
       return;
     }
 
-    fetch(fileName, { cache: "default" })
+    fetch("../" + fileName, { cache: "default" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.arrayBuffer();
@@ -367,7 +367,7 @@
         }
 
         $("#renderRoot").pptxToHtml({
-          pptxFileUrl: fileName,
+          pptxFileUrl: "../" + fileName,
           slideMode: false,
           mediaProcess: true,
           themeProcess: true,
@@ -657,8 +657,8 @@
       return;
     }
 
-    byId("wsDownload").href = fileName;
-    byId("wsWarnLink").href = fileName;
+    byId("wsDownload").href = "../" + fileName;
+    byId("wsWarnLink").href = "../" + fileName;
     byId("wsCounter").textContent = "加载中";
     document.title = basename(fileName);
 

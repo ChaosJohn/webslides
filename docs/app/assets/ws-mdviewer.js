@@ -96,7 +96,7 @@
   var rendered = false;
 
   function load() {
-    fetch(fileName, { cache: "default" })
+    fetch("../" + fileName, { cache: "default" })
       .then(function (res) {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.text();
@@ -127,8 +127,8 @@
 
     byId("wsTitle").textContent = basename(fileName);
     document.title = basename(fileName) + " · Markdown";
-    byId("wsRaw").href = fileName;
-    byId("wsDownload").href = fileName;
+    byId("wsRaw").href = "../" + fileName;
+    byId("wsDownload").href = "../" + fileName;
     byId("wsDownload").setAttribute("download", fileName.split("/").pop());
 
     load();

@@ -4,8 +4,10 @@
 
 ## 浏览方式
 
-- **首页**：https://slides.99se.cn/ 展示 `docs/` 的文件树。支持在线预览的类型带「在线预览」按钮（.pptx/.pptm 走 pptx 查看器；.md/.markdown 走 Markdown 预览页；.html 及图片/PDF/文本等浏览器原生可打开的类型直接打开），其余文件仅提供「下载」；所有文件均可下载。站点实现文件（index.html、viewer.html、mdpreview.html、manifest.json、assets/、CNAME 等）不会出现在文件树中。
-- **Markdown 预览**：`mdpreview.html?doc=<相对路径>.md`，支持 GitHub 风格表格/任务清单/删除线/自动链接、代码块语法高亮（highlight.js）、LaTeX 数学公式（KaTeX）；渲染后经 DOMPurify 清洗（放行常见 iframe 内嵌）。页面提供「原文」「下载」。
+站点实现文件统一放在 `docs/app/` 下；`docs/` 根目录保留自动跳转（`/` → `app/`，旧 `viewer.html?doc=…`、`mdpreview.html?doc=…` 也会跳转到新地址，已分享链接不断）。
+
+- **首页**：https://slides.99se.cn/ 三种视图（所有文件·默认 / 按文件树 / 按文件类型），并支持搜索文件名、按类型多选筛选、按名称/大小/修改时间升降序排序。支持在线预览的类型带「在线预览」按钮（.pptx/.pptm 走 pptx 查看器；.md/.markdown 走 Markdown 预览页；.html 及图片/PDF/文本等浏览器原生可打开的类型直接打开），其余文件仅提供「下载」；所有文件均可下载。
+- **Markdown 预览**：`app/mdpreview.html?doc=<相对路径>.md`，支持 GitHub 风格表格/任务清单/删除线/自动链接、代码块语法高亮（highlight.js）、LaTeX 数学公式（KaTeX）；渲染后经 DOMPurify 清洗（放行常见 iframe 内嵌）。页面提供「原文」「下载」。
 - **查看器**：`viewer.html?doc=<相对路径>.pptx`（如 `viewer.html?doc=dir/a.pptx`），支持：
   - 键盘：`←` `→` 翻页、`Space` 下一页、`Home`/`End` 跳转首末页、`F` 全屏、`Esc` 退出全屏
   - 底部缩略图导航栏，点击跳页
@@ -64,16 +66,18 @@ GitHub Pages 会对所有静态文件返回 `Cache-Control: max-age=600`（10 �
 
 ```
 docs/
-  index.html               # 文件树首页
-  viewer.html              # PPT 查看器
-  mdpreview.html           # Markdown 预览页
-  manifest.json            # 文件树清单（由 GitHub Actions 自动生成，递归结构）
-  assets/ws-style.css      # 共享样式
-  assets/ws-index.js       # 首页逻辑
-  assets/ws-viewer.js      # PPT 查看器逻辑
-  assets/ws-mdviewer.js    # Markdown 预览逻辑
+  index.html               # 根入口：自动跳转到 app/
+  viewer.html, mdpreview.html   # 旧的直达链接：自动跳转到 app/ 对应页
+  CNAME, .nojekyll         # GitHub Pages 所需（须留在根目录）
+  app/                     # 站点实现
+    index.html             # 首页（三种视图 + 搜索/筛选/排序）
+    viewer.html            # PPT 查看器
+    mdpreview.html         # Markdown 预览页
+    manifest.json          # 文件树清单（由 GitHub Actions 自动生成）
+    assets/                # 样式与脚本（ws-style.css / ws-index.js / ws-viewer.js / ws-mdviewer.js）
   ...                      # 待托管的文件（可放子目录，会自动递归进文件树）
-scripts/generate-manifest.mjs    # 生成 manifest.json 的脚本
+scripts/generate-manifest.mjs    # 生成 manifest.json 的脚本（写入 app/)
 scripts/bump-asset-version.mjs   # 按资源内容哈希自动更新版本号
+scripts/publish-file.mjs         # 一条命令发布文件
 .github/workflows/generate-index.yml
 ```

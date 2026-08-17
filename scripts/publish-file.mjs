@@ -19,6 +19,7 @@ const RESERVED = new Set([
   "CNAME",
   ".nojekyll",
   "assets",
+  "app",
 ]);
 
 function fail(msg) {

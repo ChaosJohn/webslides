@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>WebSlides</title>
+<link rel="stylesheet" href="./assets/ws-style.css?v=e00b87b1c1">
+</head>
+<body>
+<main class="ws-index">
+  <header>
+    <h1>WebSlides</h1>
+  </header>
+
+  <div class="ws-bar">
+    <div class="ws-views" id="wsViews" role="tablist">
+      <button class="ws-view active" data-view="all">所有文件</button>
+      <button class="ws-view" data-view="tree">按文件树</button>
+      <button class="ws-view" data-view="type">按文件类型</button>
+    </div>
+
+    <div class="ws-controls">
+      <input class="ws-search" id="wsSearch" type="search" placeholder="搜索文件名…" autocomplete="off">
+      <div class="ws-chips" id="wsChips"></div>
+      <div class="ws-sort">
+        <button class="ws-sort-type" id="wsSortBtn" data-sort="name">名称</button>
+        <button class="ws-order" id="wsDir" title="切换升/降序">↑</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ws-treeroot" id="wsContent"></div>
+  <p class="ws-empty" id="wsEmpty" hidden>没有匹配的文件。</p>
+</main>
+
+<script src="./assets/ws-index.js?v=e00b87b1c1"></script>
+</body>
+</html>

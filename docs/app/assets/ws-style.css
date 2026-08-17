@@ -669,3 +669,167 @@ a:hover {
   border: none;
   border-radius: 8px;
 }
+
+/* ============================== 首页：视图切换与控制栏 ============================== */
+.ws-bar {
+  margin-top: 2.2vh;
+  margin-bottom: 1.4vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ws-views {
+  display: inline-flex;
+  background: #16283c;
+  border: 1px solid #1e3248;
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+  align-self: flex-start;
+}
+
+.ws-view {
+  border: none;
+  background: none;
+  color: #a8b8c8;
+  font-size: 13.5px;
+  padding: 6px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ws-view:hover {
+  color: #fff;
+}
+
+.ws-view.active {
+  background: var(--orange);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ws-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ws-search {
+  flex: 1 1 220px;
+  max-width: 420px;
+  background: #16283c;
+  border: 1px solid #1e3248;
+  color: #e6eef7;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  outline: none;
+}
+
+.ws-search:focus {
+  border-color: var(--orange);
+}
+
+.ws-search::placeholder {
+  color: #5f7388;
+}
+
+.ws-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ws-chip {
+  border: 1px solid #3a5572;
+  background: none;
+  color: #b9c9d8;
+  font-size: 12.5px;
+  border-radius: 99px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.ws-chip:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.ws-chip.active {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ws-sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ws-sort-type,
+.ws-order {
+  border: 1px solid #3a5572;
+  background: none;
+  color: #b9c9d8;
+  font-size: 12.5px;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.ws-sort-type:hover,
+.ws-order:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.ws-order {
+  width: 36px;
+  padding: 6px 0;
+  text-align: center;
+}
+
+.ws-list .ws-file {
+  border-radius: 6px;
+}
+
+.ws-file.hit {
+  background: rgba(230, 126, 34, 0.12);
+  border-left: 3px solid var(--orange);
+}
+
+.ws-types .ws-type {
+  margin: 2vh 0;
+}
+
+.ws-type-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dbe7f3;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid #1e3248;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.ws-cat-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+.ws-type-count {
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 400;
+}
