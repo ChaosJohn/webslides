@@ -13,10 +13,27 @@
   - 手机触摸左右滑动翻页
   - 图表、嵌入对象、音视频、SmartArt 等网页端无法 100% 还原的元素会明示提示，并可在工具栏下载原件
 
-## 添加新的 pptx / html
+## 新增文件（两种方式，任选）
 
-1. 直接把文件放进 `docs/` 目录并 push 到 `main` 分支。
-2. GitHub Actions 工作流 `.github/workflows/generate-index.yml` 会在 push 后自动扫描 `docs/` 并生成 `docs/manifest.json`，首页列表随之更新，无需手动维护。
+**方式一：GitHub 网页上传（零本地操作，日常推荐）**
+1. 打开仓库网页 → `Add file` → `Upload files` → 把文件（可多选）拖进来。
+2. 直接点提交（提交发生在远端，无需先 pull）。
+3. GitHub Actions 会自动重建文件树 manifest，首页/预览随之更新。
+4. 注意：网页单文件上限 25MB；超大文件请在本地用方式二。
+
+**方式二：本地一条命令发布（自动 pull+拷贝+提交+推送）**
+
+```bash
+node scripts/publish-file.mjs <文件或目录> [--as <docs内相对路径>] [--msg <提交信息>] [--force]
+```
+
+- 自动执行 `git pull --rebase` → 拷贝进 `docs/` → `git add`（只暂存本次拷贝的文件）→ 提交 → `push`
+- 示例：
+  - `node scripts/publish-file.mjs ~/Desktop/report.md`
+  - `node scripts/publish-file.mjs report.pdf --as papers/report.pdf`
+  - `node scripts/publish-file.mjs mydeck/ --as mydeck`
+- 默认提交信息为 `feat: add docs/<路径>`，可用 `--msg` 自定义；目标已存在时需 `--force`
+- 会拒绝覆盖站点实现文件（index/viewer/mdpreview/manifest/assets 等），并提示其它未提交改动
 
 ## 本地预览
 
