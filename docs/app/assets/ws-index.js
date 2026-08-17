@@ -637,6 +637,12 @@
       return res.json();
     })
     .then(function (manifest) {
+      var meta = manifest.meta;
+      if (meta && meta.owner && meta.repo &&
+          /^[A-Za-z0-9_.-]+$/.test(meta.owner) && /^[A-Za-z0-9_.-]+$/.test(meta.repo)) {
+        OWNER = meta.owner;
+        REPO = meta.repo;
+      }
       tree = manifest.tree || [];
       files = flatten(tree, "");
       if (!files.length) {

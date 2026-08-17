@@ -18,10 +18,13 @@
     return m ? decodeURIComponent(m[1]) : "";
   }
 
+  // 在 replaceState 清掉 URL 参数前，先记住 &repo= 手动覆盖
+  var repoOverride = param("repo");
+
   // ---------- 仓库归属解析 ----------
-  // 1) &repo=owner/repo 优先；2) 部署在 <owner>.github.io/<repo>/ 时从域名+路径推导；3) 兜底默认值
+  // 1) &repo=owner/repo 优先；2) 服务端 manifest 内嵌的仓库身份；3) <owner>.github.io/<repo> 推导；4) 兜底默认值
   function resolveRepo() {
-    var ov = param("repo");
+    var ov = repoOverride;
     if (ov) {
       var parts = ov.split("/");
       if (parts.length === 2 && parts[0] && parts[1]) return [parts[0], parts[1]];
@@ -36,9 +39,40 @@
     return [DEFAULT_OWNER, DEFAULT_REPO];
   }
 
+  function validRepoPair(o, r) {
+    return o && r && /^[A-Za-z0-9_.-]+$/.test(o) && /^[A-Za-z0-9_.-]+$/.test(r);
+  }
+
   var repo = resolveRepo();
   var OWNER = repo[0];
   var REPO = repo[1];
+
+  function renderRepoLine() {
+    var el = byId("upRepo");
+    if (el) {
+      el.textContent = "上传目标仓库：" + OWNER + "/" + REPO + "（可用 &repo=owner/repo 手动覆盖）";
+    }
+  }
+
+  // 读本仓构建产物里的仓库身份（自定义域名 fork 无需手动 &repo=）
+  function applyManifestRepo() {
+    fetch("./manifest.json", { cache: "no-cache" })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (m) {
+        var meta = m && m.meta;
+        if (meta && !repoOverride && validRepoPair(meta.owner, meta.repo)) {
+          OWNER = meta.owner;
+          REPO = meta.repo;
+          renderRepoLine();
+        }
+      })
+      .catch(function () {
+        // 首次部署等场景 manifest 可能暂缺 meta，保持现状
+      });
+  }
 
   // ---------- 门禁 ----------
   var token = param("up") || sessionStorage.getItem("wsUpToken") || "";
@@ -65,10 +99,8 @@
 
   form.hidden = false;
 
-  var repoEl = byId("upRepo");
-  if (repoEl) {
-    repoEl.textContent = "上传目标仓库：" + OWNER + "/" + REPO + "（自定义域名可用 &repo=owner/repo 覆盖）";
-  }
+  renderRepoLine();
+  applyManifestRepo();
 
   function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
