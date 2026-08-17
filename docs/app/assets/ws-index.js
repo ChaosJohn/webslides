@@ -351,7 +351,7 @@
     return out;
   }
 
-  function buildNode(entry, basePath) {
+  function buildNode(entry, basePath, depth) {
     var li = document.createElement("li");
 
     if (entry.type === "dir") {
@@ -373,9 +373,9 @@
       if (entry.children.length) {
         var kidsWrap = mkEl("div", "ws-kids");
         var ul = mkEl("ul", "ws-tree");
-        ul.style.setProperty("--depth", 0);
+        ul.style.setProperty("--depth", depth + 1);
         entry.children.forEach(function (child) {
-          var cli = buildNode(child, path);
+          var cli = buildNode(child, path, depth + 1);
           if (cli) ul.appendChild(cli);
         });
         kidsWrap.appendChild(ul);
@@ -403,7 +403,7 @@
     var ul = mkEl("ul", "ws-tree");
     ul.style.setProperty("--depth", 0);
     entries.forEach(function (entry) {
-      var li = buildNode(entry, "");
+      var li = buildNode(entry, "", 0);
       if (li) ul.appendChild(li);
     });
     wrap.appendChild(ul);
