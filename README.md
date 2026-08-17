@@ -4,7 +4,7 @@
 
 ## 浏览方式
 
-站点实现文件统一放在 `docs/app/` 下；`docs/` 根目录保留自动跳转（`/` → `app/`，旧 `viewer.html?doc=…`、`mdpreview.html?doc=…` 也会跳转到新地址，已分享链接不断）。
+站点实现文件统一放在 `docs/app/` 下；`docs/` 根目录仅保留一个 `index.html` 自动跳转到 `app/`。查看器/预览页直接使用 `app/` 内的页面：`app/viewer.html?doc=…`、`app/mdpreview.html?doc=…`。
 
 - **首页**：https://slides.99se.cn/ 三种视图（所有文件·默认 / 按文件树 / 按文件类型），并支持搜索文件名、按类型多选筛选、按名称/大小/修改时间升降序排序。支持在线预览的类型带「在线预览」按钮（.pptx/.pptm 走 pptx 查看器；.md/.markdown 走 Markdown 预览页；.html 及图片/PDF/文本等浏览器原生可打开的类型直接打开），其余文件仅提供「下载」；所有文件均可下载。
 - **Markdown 预览**：`app/mdpreview.html?doc=<相对路径>.md`，支持 GitHub 风格表格/任务清单/删除线/自动链接、代码块语法高亮（highlight.js）、LaTeX 数学公式（KaTeX）；渲染后经 DOMPurify 清洗（放行常见 iframe 内嵌）。页面提供「原文」「下载」。
@@ -67,7 +67,6 @@ GitHub Pages 会对所有静态文件返回 `Cache-Control: max-age=600`（10 �
 ```
 docs/
   index.html               # 根入口：自动跳转到 app/
-  viewer.html, mdpreview.html   # 旧的直达链接：自动跳转到 app/ 对应页
   CNAME, .nojekyll         # GitHub Pages 所需（须留在根目录）
   app/                     # 站点实现
     index.html             # 首页（三种视图 + 搜索/筛选/排序）
