@@ -37,8 +37,64 @@
   var msgEl = byId("upMsg");
   var barWrap = byId("upBar");
   var barFill = byId("upBarFill");
+  var selList = byId("upSel");
+
+  var pending = [];
 
   form.hidden = false;
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1024 / 1024).toFixed(2) + " MB";
+  }
+
+  function renderSel() {
+    selList.innerHTML = "";
+    var has = pending.length > 0;
+    selList.hidden = !has;
+    if (!has) return;
+    pending.forEach(function (f, idx) {
+      var li = document.createElement("li");
+      var nm = document.createElement("span");
+      nm.className = "nm";
+      nm.textContent = f.name;
+      nm.title = f.name;
+      var sz = document.createElement("span");
+      sz.className = "sz";
+      sz.textContent = formatSize(f.size);
+      var rm = document.createElement("button");
+      rm.className = "rm";
+      rm.type = "button";
+      rm.setAttribute("aria-label", "移除 " + f.name);
+      rm.textContent = "\u2715";
+      rm.addEventListener("click", function () {
+        pending.splice(idx, 1);
+        syncInputFiles();
+        renderSel();
+        setMsg(pending.length ? "已选择 " + pending.length + " 个文件。" : "", "ok");
+      });
+      li.appendChild(nm);
+      li.appendChild(sz);
+      li.appendChild(rm);
+      selList.appendChild(li);
+    });
+    setMsg("已选择 " + pending.length + " 个文件，点击「上传」开始。", "ok");
+  }
+
+  function syncInputFiles() {
+    var dt = new DataTransfer();
+    pending.forEach(function (f) {
+      dt.items.add(f);
+    });
+    fileInput.files = dt.files;
+  }
+
+  function setPending(files) {
+    pending = files.slice();
+    syncInputFiles();
+    renderSel();
+  }
 
   // ---------- 工具 ----------
   function setMsg(text, cls) {
@@ -191,8 +247,7 @@
 
   async function handleUpload() {
     var dir = normalizeDir(dirInput.value);
-    var files = Array.prototype.slice.call(fileInput.files || []);
-    if (!files.length) {
+    if (!pending.length) {
       setMsg("请先选择文件", "bad");
       return;
     }
@@ -200,11 +255,15 @@
     setMsg("");
     resList.innerHTML = "";
     var okN = 0;
-    for (var i = 0; i < files.length; i++) {
-      if (await uploadOne(files[i], dir)) okN++;
+    for (var i = 0; i < pending.length; i++) {
+      if (await uploadOne(pending[i], dir)) okN++;
     }
     setBusy(false);
-    setMsg("完成：" + okN + "/" + files.length + " 个文件；文件列表稍后自动更新（含同名覆盖）。", okN === files.length ? "ok" : "bad");
+    setMsg("完成：" + okN + "/" + pending.length + " 个文件；文件列表稍后自动更新（含同名覆盖）。", okN === pending.length ? "ok" : "bad");
+    if (okN === pending.length) {
+      setPending([]);
+      fileInput.value = "";
+    }
   }
 
   goBtn.addEventListener("click", handleUpload);
@@ -256,12 +315,9 @@
       setMsg("不支持拖拽文件夹，请展开后选择文件", "bad");
       return;
     }
-    var dt = new DataTransfer();
-    dropped.forEach(function (f) {
-      dt.items.add(f);
-    });
-    fileInput.files = dt.files;
-    fileInput.dataset.byDrop = "1";
-    setMsg("已拖入 " + dropped.length + " 个文件，点击「上传」开始。", "ok");
+    setPending(dropped);
+  });
+  fileInput.addEventListener("change", function () {
+    setPending(Array.prototype.slice.call(fileInput.files || []));
   });
 })();

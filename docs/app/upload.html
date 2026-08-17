@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>上传文件</title>
-<link rel="stylesheet" href="./assets/ws-style.css?v=b59f96d7dd">
+<link rel="stylesheet" href="./assets/ws-style.css?v=d9f95e4b41">
 <style>
   .up-page { max-width: 720px; margin: 0 auto; padding: 4vh max(3vw, 20px) 8vh; color: #e6eef7; }
   .up-page h1 { color: #fff; font-size: clamp(22px, 3.6vh, 30px); }
@@ -29,6 +29,15 @@
   ul.up-res { list-style: none; margin-top: 16px; }
   ul.up-res li { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 13.5px; word-break: break-all; }
   ul.up-res li b.ok { color: #7fd48c; } ul.up-res li b.bad { color: #ffb4a0; }
+  ul.up-sel { list-style: none; margin: 2px 0 10px; }
+  ul.up-sel li { display: flex; align-items: center; gap: 10px; padding: 9px 6px;
+    border-bottom: 1px solid rgba(255,255,255,.07); font-size: 13.5px; }
+  .up-sel .nm { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-break: break-all; }
+  .up-sel .sz { color: #5f7388; font-size: 12px; flex: 0 0 auto; }
+  .up-sel .rm { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 8px; border: 1px solid #3a5572;
+    background: none; color: #ffb4a0; font-size: 17px; cursor: pointer; touch-action: manipulation; }
+  .up-sel .rm:hover { border-color: var(--orange); color: var(--orange); }
+  @media (max-width: 640px) { ul.up-sel .nm { max-width: 62%; } }
   .up-locked { color: #a8b8c8; }
 </style>
 </head>
@@ -49,6 +58,7 @@
       <input type="file" id="upFiles" multiple>
       <p class="up-drop-hint">支持点击选择 或 拖拽到此处（不支持整个文件夹）。</p>
     </div>
+    <ul class="up-sel" id="upSel" hidden></ul>
     <button class="up-go" id="upGo">上传</button>
     <div class="up-progress" id="upBar"><i id="upBarFill"></i></div>
     <p class="up-msg" id="upMsg"></p>
@@ -64,6 +74,6 @@
   </p>
 </main>
 
-<script src="./assets/ws-upload.js?v=b59f96d7dd"></script>
+<script src="./assets/ws-upload.js?v=d9f95e4b41"></script>
 </body>
 </html>
