@@ -97,7 +97,6 @@
       rm.textContent = "\u2715";
       rm.addEventListener("click", function () {
         pending.splice(idx, 1);
-        syncInputFiles();
         renderSel();
         setMsg(pending.length ? "已选择 " + pending.length + " 个文件。" : "", "ok");
       });
@@ -109,17 +108,21 @@
     setMsg("已选择 " + pending.length + " 个文件，点击「上传」开始。", "ok");
   }
 
-  function syncInputFiles() {
-    var dt = new DataTransfer();
-    pending.forEach(function (f) {
-      dt.items.add(f);
-    });
-    fileInput.files = dt.files;
-  }
-
   function setPending(files) {
     pending = files.slice();
-    syncInputFiles();
+    renderSel();
+  }
+
+  function addPending(files) {
+    var merged = pending.slice();
+    files.forEach(function (f) {
+      if (!merged.some(function (m) {
+        return m.name === f.name && m.size === f.size;
+      })) {
+        merged.push(f);
+      }
+    });
+    pending = merged;
     renderSel();
   }
 
@@ -342,20 +345,12 @@
       setMsg("不支持拖拽文件夹，请展开后选择文件", "bad");
       return;
     }
-    setPending(dropped);
+    addPending(dropped);
   });
   fileInput.addEventListener("change", function () {
-    var incoming = Array.prototype.slice.call(fileInput.files || []);
-    var merged = pending.slice();
-    incoming.forEach(function (f) {
-      if (!merged.some(function (m) {
-        return m.name === f.name && m.size === f.size;
-      })) {
-        merged.push(f);
-      }
-    });
-    setPending(merged);
+    var picked = Array.prototype.slice.call(fileInput.files || []);
     fileInput.value = "";
-    setMsg("已选择 " + merged.length + " 个文件（新选择已并入列表）。", "ok");
+    if (!picked.length) return;
+    addPending(picked);
   });
 })();
