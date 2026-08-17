@@ -621,6 +621,17 @@
     });
 
     delBtn.addEventListener("click", deleteSelected);
+
+    var logoutBtn = byId("wsLogout");
+    logoutBtn.addEventListener("click", function () {
+      sessionStorage.removeItem("wsUpToken");
+      ADMIN_TOKEN = "";
+      admin.on = false;
+      admin.selected = {};
+      adminBar.hidden = true;
+      setAdminHint("");
+      render();
+    });
   }
 
   // ============ 启动 ============
