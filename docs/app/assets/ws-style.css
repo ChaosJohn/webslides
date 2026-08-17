@@ -766,6 +766,23 @@ a:hover {
   color: #5f7388;
 }
 
+.ws-fgroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-fgroup + .ws-fgroup {
+  padding-left: 12px;
+  border-left: 1px solid #22354c;
+}
+
+.ws-label {
+  color: #5f7388;
+  font-size: 12px;
+  user-select: none;
+}
+
 .ws-chips {
   display: flex;
   flex-wrap: wrap;
@@ -773,6 +790,9 @@ a:hover {
 }
 
 .ws-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 1px solid #3a5572;
   background: none;
   color: #b9c9d8;
@@ -783,16 +803,28 @@ a:hover {
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
+.ws-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chipc, #8a8f96);
+  flex: 0 0 auto;
+}
+
 .ws-chip:hover {
-  border-color: var(--orange);
-  color: var(--orange);
+  border-color: var(--chipc, var(--orange));
+  color: var(--chipc, var(--orange));
 }
 
 .ws-chip.active {
-  background: var(--orange);
-  border-color: var(--orange);
+  background: var(--chipc, var(--orange));
+  border-color: var(--chipc, var(--orange));
   color: #fff;
   font-weight: 600;
+}
+
+.ws-chip.active .dot {
+  background: #fff;
 }
 
 .ws-sort {
@@ -803,11 +835,11 @@ a:hover {
 
 .ws-sort-type,
 .ws-order {
-  border: 1px solid #3a5572;
-  background: none;
-  color: #b9c9d8;
+  border: 1px solid #2a4a6d;
+  background: #1a2f46;
+  color: #dbe7f3;
   font-size: 12.5px;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 6px 12px;
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease;
@@ -819,10 +851,26 @@ a:hover {
   color: var(--orange);
 }
 
+.ws-sort-type {
+  font-weight: 600;
+  min-width: 74px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ws-caret {
+  color: var(--orange);
+  margin-left: 8px;
+  font-size: 11px;
+}
+
 .ws-order {
   width: 36px;
   padding: 6px 0;
   text-align: center;
+  color: var(--orange);
+  font-weight: 700;
 }
 
 .ws-list .ws-file {

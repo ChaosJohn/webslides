@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>WebSlides</title>
-<link rel="stylesheet" href="./assets/ws-style.css?v=96e2b4a11c">
+<link rel="stylesheet" href="./assets/ws-style.css?v=c97c3dbe01">
 </head>
 <body>
 <main class="ws-index">
@@ -22,11 +22,19 @@
 
     <div class="ws-controls">
       <input class="ws-search" id="wsSearch" type="search" placeholder="搜索文件名…" autocomplete="off">
-      <div class="ws-chips" id="wsChips"></div>
-      <div class="ws-sort">
-        <button class="ws-sort-type" id="wsSortBtn" data-sort="name">名称</button>
-        <button class="ws-order" id="wsDir" title="切换升/降序">↑</button>
-      </div>
+
+      <span class="ws-fgroup">
+        <span class="ws-label">类型</span>
+        <div class="ws-chips" id="wsChips"></div>
+      </span>
+
+      <span class="ws-fgroup">
+        <span class="ws-label">排序</span>
+        <div class="ws-sort">
+          <button class="ws-sort-type" id="wsSortBtn" data-sort="name">名称 <span class="ws-caret">▾</span></button>
+          <button class="ws-order" id="wsDir" title="切换升/降序">↑</button>
+        </div>
+      </span>
     </div>
 
     <div class="ws-admin" id="wsAdmin" hidden>
@@ -43,6 +51,6 @@
   <p class="ws-empty" id="wsEmpty" hidden>没有匹配的文件。</p>
 </main>
 
-<script src="./assets/ws-index.js?v=96e2b4a11c"></script>
+<script src="./assets/ws-index.js?v=c97c3dbe01"></script>
 </body>
 </html>

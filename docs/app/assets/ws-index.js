@@ -440,9 +440,17 @@
     chipBox.innerHTML = "";
     var present = usedCats(files, {});
     present.forEach(function (cat) {
-      var chip = mkEl("button", "ws-chip", cat.label);
+      var chip = document.createElement("button");
+      chip.className = "ws-chip";
       chip.dataset.cat = cat.key;
       chip.title = cat.label;
+      chip.style.setProperty("--chipc", BADGE_COLOR[cat.key]);
+      var dot = document.createElement("i");
+      dot.className = "dot";
+      var txt = document.createElement("span");
+      txt.textContent = cat.label;
+      chip.appendChild(dot);
+      chip.appendChild(txt);
       chip.addEventListener("click", function () {
         var key = cat.key;
         if (state.types[key]) delete state.types[key];
@@ -475,10 +483,13 @@
     var sortBtn = document.getElementById("wsSortBtn");
     var order = ["name", "size", "time"];
     var labels = { name: "名称", size: "大小", time: "修改时间" };
+    function renderSortBtn() {
+      sortBtn.innerHTML = labels[state.sort] + ' <span class="ws-caret">\u25BE</span>';
+    }
     sortBtn.addEventListener("click", function () {
       var i = order.indexOf(state.sort);
       state.sort = order[(i + 1) % order.length];
-      sortBtn.textContent = labels[state.sort];
+      renderSortBtn();
       render();
     });
 
