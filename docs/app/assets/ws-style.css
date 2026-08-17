@@ -923,6 +923,10 @@ a:hover {
   padding: 8px 10px;
 }
 
+.ws-admin[hidden] {
+  display: none !important;
+}
+
 .ws-admin-btn {
   border: 1px solid #3a5572;
   background: none;
