@@ -173,6 +173,7 @@ a:hover {
   display: flex;
   gap: 8px;
   flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .ws-link {
@@ -240,7 +241,8 @@ a:hover {
   }
 
   .ws-name-link {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
+    min-width: 0;
   }
 
   .ws-acts {
