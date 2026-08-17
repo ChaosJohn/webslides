@@ -100,10 +100,6 @@
     '<span class="ws-folder" aria-hidden="true"><svg viewBox="0 0 24 20" width="21" height="17">' +
     '<path d="M2 5a2 2 0 0 1 2-2h5l2.2 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" fill="currentColor"/></svg></span>';
 
-  var ICON_EYE =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
-
   var ICON_DOWNLOAD =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
@@ -170,31 +166,17 @@
     badge.style.background = badgeInfo(fileEl.name).color;
     badge.title = fileEl.name;
 
-    var name = mkEl("span", "ws-name", fileEl.name);
+    var name = mkEl("a", "ws-name ws-name-link", fileEl.name);
     name.title = fileEl.path;
+    name.href = fileLink(fileEl);
+    name.target = "_blank";
+    name.rel = "noopener";
 
     var meta = mkEl("span", "ws-meta");
     meta.appendChild(mkEl("span", "", formatSize(fileEl.size)));
     meta.appendChild(mkEl("span", "", formatDate(fileEl.modified)));
 
     var acts = mkEl("div", "ws-acts");
-
-    var kind = previewKind(fileEl.name);
-    if (kind) {
-      var preview = mkEl("a", "ws-link preview icon");
-      preview.innerHTML = ICON_EYE;
-      preview.setAttribute("aria-label", "在线预览");
-      preview.title = "在线预览";
-      preview.href =
-        kind === "viewer"
-          ? "./viewer.html?doc=" + encodePath(fileEl.path)
-          : kind === "md"
-          ? "./mdpreview.html?doc=" + encodePath(fileEl.path)
-          : "../" + encodePath(fileEl.path);
-      preview.target = "_blank";
-      preview.rel = "noopener";
-      acts.appendChild(preview);
-    }
 
     var dl = mkEl("a", "ws-link dl icon");
     dl.innerHTML = ICON_DOWNLOAD;
@@ -209,6 +191,13 @@
     row.appendChild(meta);
     row.appendChild(acts);
     return row;
+  }
+
+  function fileLink(fileEl) {
+    var kind = previewKind(fileEl.name);
+    if (kind === "viewer") return "./viewer.html?doc=" + encodePath(fileEl.path);
+    if (kind === "md") return "./mdpreview.html?doc=" + encodePath(fileEl.path);
+    return "../" + encodePath(fileEl.path);
   }
 
   // ============ 视图渲染 ============
