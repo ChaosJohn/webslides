@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache">
 <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
 <title>Markdown 预览</title>
-<link rel="stylesheet" href="./assets/ws-style.css?v=79c2c0c299">
+<link rel="stylesheet" href="./assets/ws-style.css?v=7b7505fc34">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 </head>
@@ -16,6 +16,7 @@
   <div id="fullscreenRoot" class="ws-fullscreen-root">
     <header class="ws-toolbar">
       <a class="home" href="./" title="返回文件列表">‹ 目录</a>
+      <button class="ws-btn" id="mdTocToggle" title="目录" style="display:none;font-size:16px;">☰</button>
       <div class="title" id="wsTitle">Markdown 预览</div>
       <div class="actions">
         <a class="ws-btn" id="wsRaw" href="#" target="_blank" rel="noopener">原文</a>
@@ -23,7 +24,10 @@
       </div>
     </header>
 
-    <main class="md-content" id="mdContent"></main>
+    <div class="md-body">
+      <aside class="md-toc" id="mdToc" hidden></aside>
+      <main class="md-content" id="mdContent"></main>
+    </div>
   </div>
 
   <div class="ws-render-root" id="renderRoot" aria-hidden="true"></div>
@@ -40,6 +44,6 @@
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script src="./assets/ws-mdviewer.js?v=79c2c0c299"></script>
+<script src="./assets/ws-mdviewer.js?v=7b7505fc34"></script>
 </body>
 </html>
