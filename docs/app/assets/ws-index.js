@@ -209,7 +209,7 @@
 
   // ============ 行与操作 ============
 
-  function buildRow(fileEl) {
+  function buildRow(fileEl, showPath) {
     var row = mkEl("div", "ws-file");
 
     var badge = mkEl("span", "ws-badge", badgeInfo(fileEl.name).text);
@@ -230,7 +230,8 @@
       row.appendChild(sel);
     }
 
-    var name = mkEl("a", "ws-name ws-name-link", fileEl.name);
+    var displayName = showPath ? fileEl.path : fileEl.name;
+    var name = mkEl("a", "ws-name ws-name-link", displayName);
     name.title = fileEl.path;
     name.href = fileLink(fileEl);
     name.target = "_blank";
@@ -270,7 +271,7 @@
     var list = sortedList(files.filter(fileMatches));
     var wrap = mkEl("div", "ws-list");
     list.forEach(function (f) {
-      var row = buildRow(f);
+      var row = buildRow(f, true);
       if (state.q) row.classList.add("hit");
       wrap.appendChild(row);
     });
@@ -295,7 +296,7 @@
       sec.appendChild(head);
       var listEl = mkEl("div", "ws-list");
       arr.forEach(function (f) {
-        listEl.appendChild(buildRow(f));
+        listEl.appendChild(buildRow(f, true));
       });
       sec.appendChild(listEl);
       wrap.appendChild(sec);
@@ -389,7 +390,7 @@
       return li;
     } else {
       li.className = "ws-file-node";
-      var row = buildRow(entry.file);
+      var row = buildRow(entry.file, false);
       if (state.q) row.classList.add("hit");
       li.appendChild(row);
       return li;
