@@ -108,24 +108,38 @@
     return (bytes / 1024 / 1024).toFixed(2) + " MB";
   }
 
+  function cleanName(raw) {
+    var n = String(raw || "").replace(/[\\/]/g, "").trim();
+    if (!n || n.indexOf("..") !== -1) return "";
+    return n;
+  }
+
   function renderSel() {
     selList.innerHTML = "";
     var has = pending.length > 0;
     selList.hidden = !has;
     if (!has) return;
-    pending.forEach(function (f, idx) {
+    pending.forEach(function (item, idx) {
       var li = document.createElement("li");
       var nm = document.createElement("span");
       nm.className = "nm";
-      nm.textContent = f.name;
-      nm.title = f.name;
+      nm.textContent = item.name;
+      nm.title = item.name;
       var sz = document.createElement("span");
       sz.className = "sz";
-      sz.textContent = formatSize(f.size);
+      sz.textContent = formatSize(item.file.size);
+      var ed = document.createElement("button");
+      ed.className = "rm";
+      ed.type = "button";
+      ed.setAttribute("aria-label", "重命名");
+      ed.textContent = "\u270F\uFE0F";
+      ed.addEventListener("click", function () {
+        startRename(li, item, idx);
+      });
       var rm = document.createElement("button");
       rm.className = "rm";
       rm.type = "button";
-      rm.setAttribute("aria-label", "移除 " + f.name);
+      rm.setAttribute("aria-label", "移除 " + item.name);
       rm.textContent = "\u2715";
       rm.addEventListener("click", function () {
         pending.splice(idx, 1);
@@ -134,14 +148,59 @@
       });
       li.appendChild(nm);
       li.appendChild(sz);
+      li.appendChild(ed);
       li.appendChild(rm);
       selList.appendChild(li);
     });
     setMsg("已选择 " + pending.length + " 个文件，点击「上传」开始。", "ok");
   }
 
+  function startRename(li, item, idx) {
+    var oldNm = li.querySelector(".nm");
+    var sz = li.querySelector(".sz");
+    var ed = li.querySelector(".rm");
+    var rm = li.querySelectorAll(".rm")[1];
+    [oldNm, sz, ed, rm].forEach(function (el) {
+      if (el) el.style.display = "none";
+    });
+    var inp = document.createElement("input");
+    inp.type = "text";
+    inp.className = "nm renaming";
+    inp.value = item.name;
+    inp.setAttribute("aria-label", "输入新文件名（含扩展名）");
+    li.insertBefore(inp, li.firstChild);
+    inp.focus();
+    inp.select();
+
+    function confirm() {
+      var v = cleanName(inp.value);
+      if (!v) {
+        inp.focus();
+        inp.select();
+        return;
+      }
+      item.name = v;
+      renderSel();
+    }
+    function cancel() {
+      renderSel();
+    }
+    inp.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); confirm(); }
+      else if (e.key === "Escape") { cancel(); }
+    });
+    inp.addEventListener("blur", function () {
+      // 延迟让 click 先触发
+      setTimeout(function () {
+        if (li.contains(inp)) confirm();
+      }, 100);
+    });
+  }
+
   function setPending(files) {
-    pending = files.slice();
+    pending = files.map(function (f) {
+      return { file: f, name: f.name };
+    });
     renderSel();
   }
 
@@ -149,9 +208,9 @@
     var merged = pending.slice();
     files.forEach(function (f) {
       if (!merged.some(function (m) {
-        return m.name === f.name && m.size === f.size;
+        return m.file.name === f.name && m.file.size === f.size;
       })) {
-        merged.push(f);
+        merged.push({ file: f, name: f.name });
       }
     });
     pending = merged;
@@ -271,25 +330,27 @@
     li.appendChild(b);
   }
 
-  async function uploadOne(file, dir) {
+  async function uploadOne(item, dir) {
+    var file = item.file;
+    var name = item.name;
     var path;
     try {
-      path = buildTarget(file.name, dir);
+      path = buildTarget(name, dir);
     } catch (e) {
       var li0 = document.createElement("li");
       pushEntry(li0, "bad", "跳过");
-      li0.appendChild(document.createTextNode("  " + file.name + " — " + e.message));
+      li0.appendChild(document.createTextNode("  " + name + " — " + e.message));
       resList.appendChild(li0);
       return false;
     }
 
     var li = document.createElement("li");
-    li.textContent = file.name + " → " + path + "  ";
+    li.textContent = name + " → " + path + "  ";
     resList.appendChild(li);
 
     try {
       var content = await fileToBase64(file);
-      setMsg("上传 " + file.name);
+      setMsg("上传 " + name);
       try {
         await uploadViaXhr(path, content, null);
       } catch (err) {

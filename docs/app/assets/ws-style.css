@@ -1093,3 +1093,25 @@ body.toc-off .md-toc {
   font-family: inherit;
   overflow-x: auto;
 }
+
+/* 待传列表重命名输入框 */
+ul.up-sel .nm.renaming {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #0d1b2a;
+  border: 1px solid var(--orange);
+  color: #e6eef7;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+ul.up-sel .nm.renaming:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
+}
