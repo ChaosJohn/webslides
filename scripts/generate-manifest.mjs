@@ -28,6 +28,14 @@ function repoRoot() {
   return join(scriptsDir, "..");
 }
 
+function gitModDate(gitRel) {
+  try {
+    const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", gitRel], { encoding: "utf8", cwd: repoRoot() }).trim();
+    if (out) return out;
+  } catch (e) {}
+  return null;
+}
+
 const ROOT_HIDDEN = new Set([
   "index.html",
   "viewer.html",
@@ -39,7 +47,7 @@ const ROOT_HIDDEN = new Set([
   "app",
 ]);
 
-function build(dir) {
+function build(dir, relPrefix) {
   const entries = readdirSync(dir, { withFileTypes: true })
     .map((e) => ({ name: e.name, isDir: e.isDirectory() }))
     .sort((a, b) => {
@@ -51,18 +59,22 @@ function build(dir) {
     .filter((e) => !ROOT_HIDDEN.has(e.name))
     .map((e) => {
       const full = join(dir, e.name);
+      const rel = relPrefix ? relPrefix + "/" + e.name : e.name;
+      const gitRel = "docs/" + rel;
       if (e.isDir) {
-        return { name: e.name, type: "dir", modified: statSync(full).mtime.toISOString(), children: build(full) };
+        const modified = gitModDate(gitRel) || statSync(full).mtime.toISOString();
+        return { name: e.name, type: "dir", modified, children: build(full, rel) };
       }
       const st = statSync(full);
-      return { name: e.name, type: "file", size: st.size, modified: st.mtime.toISOString() };
+      const modified = gitModDate(gitRel) || st.mtime.toISOString();
+      return { name: e.name, type: "file", size: st.size, modified };
     });
 }
 
 const manifest = {
   generated: new Date().toISOString(),
   meta: detectRepo(),
-  tree: build(docsDir),
+  tree: build(docsDir, ""),
 };
 
 writeFileSync(join(docsDir, "app", "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
