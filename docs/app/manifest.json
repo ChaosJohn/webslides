@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T12:00:17.343Z",
+  "generated": "2026-09-09T12:02:09.351Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -65,13 +65,13 @@
     {
       "name": "qa-plan",
       "type": "dir",
-      "modified": "2026-09-09T20:00:03+08:00",
+      "modified": "2026-09-09T20:01:42+08:00",
       "children": [
         {
-          "name": "Cangjie_105.1_质量策划-安全专项.md",
+          "name": "security.md",
           "type": "file",
           "size": 1676,
-          "modified": "2026-09-09T20:00:03+08:00"
+          "modified": "2026-09-09T20:01:42+08:00"
         }
       ]
     },
