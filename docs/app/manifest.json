@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T12:02:09.351Z",
+  "generated": "2026-09-09T12:07:04.844Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -65,13 +65,13 @@
     {
       "name": "qa-plan",
       "type": "dir",
-      "modified": "2026-09-09T20:01:42+08:00",
+      "modified": "2026-09-09T20:06:37+08:00",
       "children": [
         {
           "name": "security.md",
           "type": "file",
-          "size": 1676,
-          "modified": "2026-09-09T20:01:42+08:00"
+          "size": 1488,
+          "modified": "2026-09-09T20:06:37+08:00"
         }
       ]
     },
