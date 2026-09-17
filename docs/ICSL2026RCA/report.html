@@ -780,38 +780,38 @@ blockquote p {
         <tbody>
           <tr>
             <td>1</td>
-            <td><strong>升级模型组合与围栏应对策略</strong></td>
+            <td><strong>白盒扫描模型能力提升</strong></td>
             <td>送检前使用最新 SOTA 模型；关注最新越狱机制，建立围栏应对策略库</td>
             <td>虞嘉豪</td>
             <td>9.30</td>
           </tr>
           <tr>
             <td>2</td>
-            <td><strong>优化模式库执行检出率与覆盖边界</strong></td>
+            <td><strong>模式库与扫描策略优化</strong></td>
             <td>解决 3 个模式覆盖不足、2 个盲区的模式库差距</td>
             <td>虞嘉豪</td>
-            <td>9.10</td>
+            <td>9.30</td>
           </tr>
           <tr>
             <td>3</td>
-            <td><strong>安全问题定级标准对齐</strong></td>
+            <td><strong>CVSS 定级标准落地</strong></td>
             <td>严格按 CVE 的 CVSS 打分标准定级，向 ICSL 交流学习打分细则</td>
             <td>虞嘉豪</td>
-            <td>待定</td>
+            <td>10.30</td>
           </tr>
           <tr>
             <td>4</td>
-            <td><strong>责任组回溯分析与典型案例整理</strong></td>
+            <td><strong>责任组安全回溯与案例沉淀</strong></td>
             <td>问题所属责任组单独做回溯分析，排查类似问题、做泛化分析、整理典型案例</td>
             <td>问题所属责任组</td>
             <td>待定</td>
           </tr>
           <tr>
             <td>5</td>
-            <td><strong>安全测试改进</strong></td>
-            <td>基于当前测试人力选择重点落脚点，如协议 fuzz 等投入产出比高的方向</td>
+            <td><strong>测试体系补强</strong></td>
+            <td>基于当前测试人力评估，选择1~2个缺口作为2026年测试改进落脚点（可行性+性价比）</td>
             <td>测试团队</td>
-            <td>待定</td>
+            <td>10.30</td>
           </tr>
         </tbody>
       </table>
@@ -821,13 +821,13 @@ blockquote p {
     <!-- ===== 第14页：措施1 ===== -->
     <div class="slide" data-label="措施1模型组合">
       <div class="eyebrow">Measure 1</div>
-      <h2>措施1：升级模型组合与围栏应对策略</h2>
+      <h2>措施1</h2>
       <table class="measure-table">
         <tr><th>What</th><td>送检前使用最新的 SOTA 模型作为白盒扫描主力模型；关注最新的越狱机制，建立安全围栏应对策略库</td></tr>
         <tr><th>Why</th><td>我们使用 GPT 5.5，ICSL 使用 GPT 5.6，模型版本差异客观存在；Claude 因安全围栏在我们的扫描中基本不可用，ICSL 通过越狱突破了 GPT 5.6 的围栏。本次 10 个问题中 5 个已有模式但未检出，说明模式库本身覆盖到位，差异在模型执行效果。送检前使用最新 SOTA 模型并建立围栏应对策略是提升扫描检出能力的必要措施</td></tr>
         <tr><th>Who</th><td>虞嘉豪</td></tr>
-        <tr><th>When</th><td>9.30</td></tr>
-        <tr><th>Where</th><td>送检前模型版本评估与接入配置；安全围栏应对策略库文档</td></tr>
+        <tr><th>When</th><td>每次使用国外SOTA模型进行安全扫描时</td></tr>
+        <tr><th>Where</th><td>送检前模型版本评估；安全围栏应对策略</td></tr>
         <tr><th>How</th><td>① 建立送检前模型版本评估机制，确保使用当时最新的 SOTA 模型；② 持续关注并跟踪最新的越狱机制，更新围栏应对策略库；③ 对围栏中断的扫描任务自动降级到备用模型或调整提示词重试</td></tr>
       </table>
       <div class="page-num">12 / 20</div>
@@ -836,12 +836,12 @@ blockquote p {
     <!-- ===== 第15页：措施2 ===== -->
     <div class="slide" data-label="措施2模式库">
       <div class="eyebrow">Measure 2</div>
-      <h2>措施2：优化模式库执行检出率与覆盖边界</h2>
+      <h2>措施2</h2>
       <table class="measure-table">
         <tr><th>What</th><td>优化 Analyst 阶段检出策略，扩展模式覆盖边界，补充模式库盲区</td></tr>
         <tr><th>Why</th><td>本次 10 个问题中 3 个模式覆盖不足、2 个真正盲区。主要差距在于模式覆盖边界过窄和部分组件缺少特有模式，而非模式库整体缺失</td></tr>
         <tr><th>Who</th><td>虞嘉豪</td></tr>
-        <tr><th>When</th><td>9.10</td></tr>
+        <tr><th>When</th><td>9.30</td></tr>
         <tr><th>Where</th><td>优化后的挖洞Skills</td></tr>
         <tr><th>How</th><td>① 优化 Analyst 并行策略；② 调整误报排除规则；③ 扩展模式覆盖边界；④ 补充组件特有模式；⑤ 补充模式库盲区；⑥ 增强模式 Code Signature</td></tr>
       </table>
@@ -854,12 +854,12 @@ blockquote p {
     <!-- ===== 第16页：措施3 ===== -->
     <div class="slide" data-label="措施3定级标准">
       <div class="eyebrow">Measure 3</div>
-      <h2>措施3：安全问题定级标准对齐</h2>
+      <h2>措施3</h2>
       <table class="measure-table">
         <tr><th>What</th><td>安全问题定级严格按照 CVE 的 CVSS 打分标准执行</td></tr>
         <tr><th>Why</th><td>本次发现定级标准差异导致部分问题被判定为非问题：#9 HTTP chunked 无大小限制因 1:1 攻击判定为非问题，ICSL 判定为低危；#2 HLE 注释闭合注入因"开发者应对工具生成代码负责"判定为非问题，ICSL 判定为严重。</td></tr>
         <tr><th>Who</th><td>虞嘉豪</td></tr>
-        <tr><th>When</th><td>—</td></tr>
+        <tr><th>When</th><td>10.30</td></tr>
         <tr><th>Where</th><td>安全问题定级标准参考文档</td></tr>
         <tr><th>How</th><td>向 ICSL 交流学习 CVSS 打分细则，建立内部打分规范</td></tr>
       </table>
@@ -869,7 +869,7 @@ blockquote p {
     <!-- ===== 第17页：措施4 ===== -->
     <div class="slide" data-label="措施4开发案例">
       <div class="eyebrow">Measure 4</div>
-      <h2>措施4：责任组回溯分析与典型案例整理</h2>
+      <h2>措施4</h2>
       <table class="measure-table">
         <tr><th>What</th><td>问题所属的责任组单独做回溯分析，整理典型案例</td></tr>
         <tr><th>Why</th><td>从开发源头预防同类问题，提升开发团队的安全编码意识。10 个问题覆盖反序列化校验、敏感数据清零、符号链接处理、资源释放、类型匹配、协议兼容、请求大小限制、归档路径安全等多个开发场景，具有典型参考价值</td></tr>
@@ -887,14 +887,14 @@ blockquote p {
     <!-- ===== 第19页：措施5 ===== -->
     <div class="slide" data-label="措施5安全测试">
       <div class="eyebrow">Measure 5</div>
-      <h2>措施5：安全测试改进</h2>
+      <h2>措施5</h2>
       <table class="measure-table">
         <tr><th>What</th><td>从安全测试角度做改进，基于当前测试人力选择重点落脚点</td></tr>
-        <tr><th>Why</th><td>现有测试体系存在看护缺口：错误路径/失败路径测试不足（#7、#8）、边界条件测试不足（#3）、协议兼容性测试不足（#4）、操作顺序测试不足（#10）。但测试人力有限，无法全面铺开，需要选择重点方向投入</td></tr>
+        <tr><th>Why</th><td>现有测试体系存在看护缺口：错误路径/失败路径测试不足（#7、#8）、边界条件测试不足（#3）属于安全测试缺口；协议兼容性测试不足（#4）、操作顺序测试不足（#10）本质上是功能测试不足。但测试人力有限，无法全面铺开，需要选择重点方向投入</td></tr>
         <tr><th>Who</th><td>测试团队</td></tr>
-        <tr><th>When</th><td>—</td></tr>
+        <tr><th>When</th><td>10.30</td></tr>
         <tr><th>Where</th><td>安全测试改进方案</td></tr>
-        <tr><th>How</th><td>基于当前测试人力评估，选择协议 fuzz 等投入产出比高的方向作为 2026 年测试改进落脚点</td></tr>
+        <tr><th>How</th><td>基于当前测试人力评估，选择1~2个缺口作为 2026 年测试改进落脚点（选择逻辑：可行性+性价比）</td></tr>
       </table>
       <div class="page-num">16 / 20</div>
     </div>
