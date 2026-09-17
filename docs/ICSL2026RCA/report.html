@@ -497,28 +497,31 @@ blockquote p {
     <div class="slide" data-label="问题总览">
       <div class="eyebrow">Findings Overview</div>
       <h2>10 个问题总览</h2>
-      <table style="font-size:17px;">
+      <table style="font-size:15px;line-height:1.3;">
+        <style>
+          .slide:nth-of-type(3) .tag { font-size:12px; padding:2px 8px; }
+        </style>
         <thead>
           <tr>
-            <th style="width:45px">编号</th>
-            <th style="width:70px">模块</th>
-            <th>问题简述</th>
-            <th style="width:150px">攻击路径分类</th>
-            <th style="width:130px">控制点</th>
-            <th style="width:80px">改进方</th>
+            <th style="width:40px;padding:6px 10px">编号</th>
+            <th style="width:60px;padding:6px 10px">模块</th>
+            <th style="padding:6px 10px">问题简述</th>
+            <th style="width:170px;padding:6px 10px">攻击路径分类</th>
+            <th style="width:110px;padding:6px 10px">控制点</th>
+            <th style="width:70px;padding:6px 10px">改进方</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td>Macro</td><td>FlatBuffers Verifier 缺失，LSP 宏服务器 IPC 消息未校验</td><td><span class="tag tag-mid">有路径·需本地权限</span></td><td>代码检视</td><td>开发</td></tr>
-          <tr><td>2</td><td>HLE</td><td>注释闭合突破注入，恶意 .d.ts 可注入可执行代码</td><td><span class="tag tag-high">有路径·需用户交互</span></td><td>代码检视</td><td>开发</td></tr>
-          <tr><td>3</td><td>cjdb</td><td>int8_t 循环变量溢出导致无限循环和越界读取</td><td><span class="tag tag-low">无攻击路径</span></td><td>代码检视/静态检查</td><td>开发</td></tr>
-          <tr><td>4</td><td>std</td><td>IPv6 字面量解析器未兼容 RFC 4291 允许的格式</td><td><span class="tag tag-low">无攻击路径</span></td><td>DT测试、协议测试</td><td>开发测试</td></tr>
-          <tr><td>5</td><td>std</td><td>CJ_FS_OpenFile 符号链接跟随（TOCTOU 竞态）</td><td><span class="tag tag-mid">有路径·需本地权限</span></td><td>代码检视</td><td>开发</td></tr>
-          <tr><td>6</td><td>stdx</td><td>crypto/keys 加密路径密码未清零，堆内存残留</td><td><span class="tag tag-mid">有路径·需本地权限</span></td><td>代码检视</td><td>开发</td></tr>
-          <tr><td>7</td><td>stdx</td><td>crypto/keys PKCS8 加密路径 algorithm 对象泄漏</td><td><span class="tag tag-low">无攻击路径</span></td><td>代码检视/静态检查</td><td>开发</td></tr>
-          <tr><td>8</td><td>stdx</td><td>crypto/digest SM3 失败路径悬空指针导致二次释放</td><td><span class="tag tag-low">无攻击路径</span></td><td>代码检视/静态检查</td><td>开发</td></tr>
-          <tr><td>9</td><td>stdx</td><td>HTTP/1.1 chunked 请求体绕过配置的请求大小限制（1:1攻击）</td><td><span class="tag tag-high">有路径·远程可达</span></td><td>测试/代码检视</td><td>开发、测试</td></tr>
-          <tr><td>10</td><td>stdx</td><td>Tar 解压经父级符号链接删除目标目录之外的文件</td><td><span class="tag tag-mid">有路径·需本地权限</span></td><td>代码检视</td><td>开发</td></tr>
+          <tr><td style="padding:4px 10px">1</td><td style="padding:4px 10px">Macro</td><td style="padding:4px 10px">FlatBuffers Verifier 缺失，LSP 宏服务器 IPC 消息未校验</td><td style="padding:4px 10px"><span class="tag tag-mid" style="font-size:12px;padding:2px 8px;">有路径·需本地权限</span></td><td style="padding:4px 10px">代码检视</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">2</td><td style="padding:4px 10px">HLE</td><td style="padding:4px 10px">注释闭合突破注入，恶意 .d.ts 可注入可执行代码</td><td style="padding:4px 10px"><span class="tag tag-high" style="font-size:12px;padding:2px 8px;">有路径·需用户交互</span></td><td style="padding:4px 10px">代码检视</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">3</td><td style="padding:4px 10px">cjdb</td><td style="padding:4px 10px">int8_t 循环变量溢出导致无限循环和越界读取</td><td style="padding:4px 10px"><span class="tag tag-low" style="font-size:12px;padding:2px 8px;">无攻击路径</span></td><td style="padding:4px 10px">代码检视/静态检查</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">4</td><td style="padding:4px 10px">std</td><td style="padding:4px 10px">IPv6 字面量解析器未兼容 RFC 4291 允许的格式</td><td style="padding:4px 10px"><span class="tag tag-low" style="font-size:12px;padding:2px 8px;">无攻击路径</span></td><td style="padding:4px 10px">DT测试、协议测试</td><td style="padding:4px 10px">开发测试</td></tr>
+          <tr><td style="padding:4px 10px">5</td><td style="padding:4px 10px">std</td><td style="padding:4px 10px">CJ_FS_OpenFile 符号链接跟随（TOCTOU 竞态）</td><td style="padding:4px 10px"><span class="tag tag-mid" style="font-size:12px;padding:2px 8px;">有路径·需本地权限</span></td><td style="padding:4px 10px">代码检视</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">6</td><td style="padding:4px 10px">stdx</td><td style="padding:4px 10px">crypto/keys 加密路径密码未清零，堆内存残留</td><td style="padding:4px 10px"><span class="tag tag-mid" style="font-size:12px;padding:2px 8px;">有路径·需本地权限</span></td><td style="padding:4px 10px">代码检视</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">7</td><td style="padding:4px 10px">stdx</td><td style="padding:4px 10px">crypto/keys PKCS8 加密路径 algorithm 对象泄漏</td><td style="padding:4px 10px"><span class="tag tag-low" style="font-size:12px;padding:2px 8px;">无攻击路径</span></td><td style="padding:4px 10px">代码检视/静态检查</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">8</td><td style="padding:4px 10px">stdx</td><td style="padding:4px 10px">crypto/digest SM3 失败路径悬空指针导致二次释放</td><td style="padding:4px 10px"><span class="tag tag-low" style="font-size:12px;padding:2px 8px;">无攻击路径</span></td><td style="padding:4px 10px">代码检视/静态检查</td><td style="padding:4px 10px">开发</td></tr>
+          <tr><td style="padding:4px 10px">9</td><td style="padding:4px 10px">stdx</td><td style="padding:4px 10px">HTTP/1.1 chunked 请求体绕过配置的请求大小限制（1:1攻击）</td><td style="padding:4px 10px"><span class="tag tag-high" style="font-size:12px;padding:2px 8px;">有路径·远程可达</span></td><td style="padding:4px 10px">测试/代码检视</td><td style="padding:4px 10px">开发、测试</td></tr>
+          <tr><td style="padding:4px 10px">10</td><td style="padding:4px 10px">stdx</td><td style="padding:4px 10px">Tar 解压经父级符号链接删除目标目录之外的文件</td><td style="padding:4px 10px"><span class="tag tag-mid" style="font-size:12px;padding:2px 8px;">有路径·需本地权限</span></td><td style="padding:4px 10px">代码检视</td><td style="padding:4px 10px">开发</td></tr>
         </tbody>
       </table>
       <div class="page-num">03 / 20</div>
