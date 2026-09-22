@@ -1,10 +1,30 @@
 {
-  "generated": "2026-09-17T11:41:57.834Z",
+  "generated": "2026-09-22T14:01:31.684Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
   },
   "tree": [
+    {
+      "name": "cangjie",
+      "type": "dir",
+      "modified": "2026-09-22T22:01:16+08:00",
+      "children": [
+        {
+          "name": "localmode",
+          "type": "dir",
+          "modified": "2026-09-22T22:01:16+08:00",
+          "children": [
+            {
+              "name": "local-mode-for-std-changes.html",
+              "type": "file",
+              "size": 192299,
+              "modified": "2026-09-22T22:01:16+08:00"
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "cangjie_tools",
       "type": "dir",
