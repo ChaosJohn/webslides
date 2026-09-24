@@ -1743,20 +1743,44 @@ extend<T> ArrayList<T> <: ListOfCopyable<T> where T <: Copyable {
 ```cangjie
 public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
     // ---- 构造函数 ----
+    // 原始
+    @Frozen
+    public init()
+
     // 新增
     @Frozen
     public init(this @local!)
+
+    // 原始
+    @Frozen
+    public init(capacity: Int64)
 
     // 新增
     @Frozen
     public init(this @local!, capacity: Int64)
 
     // ---- 设置内部成员 ----
+    // 原始
+    @Frozen
+    public func add(key: K, value: V): Option<V>
+
     // 新增
     @Frozen
     public func add(this @local!, key: K @local!, value: V @local!): Option<V> @local!
 
+    // 原始
+    @Frozen
+    public operator func [](key: K, value!: V): Unit
+
+    // 新增
+    @Frozen
+    public operator func [](this @local!, key: K @local!, value!: V @local!): Unit
+
     // ---- 获取内部数据 ----
+    // 原始
+    @Frozen
+    public func get(key: K): ?V
+
     // 新增
     @Frozen
     public func get(this @local!, key: K @local?): Option<V> @local!
@@ -1765,12 +1789,32 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
     @Frozen
     public func get(this @local?, key: K @local?): Option<V> @local?
 
+    // 原始
+    @Frozen
+    public operator func [](key: K): V
+
+    // 新增
+    @Frozen
+    public operator func [](this @local!, key: K @local?): V @local!
+
+    // 新增
+    @Frozen
+    public operator func [](this @local?, key: K @local?): V @local?
+
     // ---- 判定类 ----
+    // 原始
+    @Frozen
+    public func contains(key: K): Bool
+
     // 新增
     @Frozen
     public func contains(this @local?, key: K @local?): Bool
 
     // ---- prop ----
+    // 原始
+    @Frozen
+    public prop size: Int64
+
     // 新增
     @Frozen
     public prop size: Int64 @local?
