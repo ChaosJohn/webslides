@@ -1821,3 +1821,355 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
 
 }
 ```
+
+## class HashMap<K, V>（全量适配）
+
+```cangjie
+public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
+    // ---- 构造函数（R1 / R2） ----
+    // 原始
+    @Frozen
+    public init()
+
+    // 新增
+    @Frozen
+    public init(this @local!)
+
+    // 原始
+    @Frozen
+    public init(elements: Collection<(K, V)>)
+
+    // 新增
+    @Frozen
+    public init(this @local!, elements: Collection<(K, V)> @local!)
+
+    // 新增
+    @Frozen
+    public init(this @local?, elements: Collection<(K, V)> @local?)
+
+    // 原始
+    @Frozen
+    public init(elements: Array<(K, V)>)
+
+    // 新增
+    @Frozen
+    public init(this @local!, elements: Array<(K, V)> @local!)
+
+    // 新增
+    @Frozen
+    public init(this @local?, elements: Array<(K, V)> @local?)
+
+    // 原始
+    @Frozen
+    public init(capacity: Int64)
+
+    // 新增
+    @Frozen
+    public init(this @local!, capacity: Int64)
+
+    // 原始
+    @Frozen
+    public init(size: Int64, initElement: (Int64) -> (K, V))
+
+    // 新增
+    @Frozen
+    public init(this @local!, size: Int64, initElement: (Int64) -> (K, V) @local!)
+
+    // 新增
+    @Frozen
+    public init(this @local?, size: Int64, initElement: (Int64) -> (K, V) @local?)
+
+    // ---- 设置内部成员（R5；只读 key 按 R8 放宽） ----
+    // 原始
+    @Frozen
+    public func add(key: K, value: V): Option<V>
+
+    // 新增
+    @Frozen
+    public func add(this @local!, key: K @local!, value: V @local!): Option<V> @local!
+
+    // 原始
+    @Frozen
+    public func add(all!: Collection<(K, V)>): Unit
+
+    // 新增
+    @Frozen
+    public func add(this @local!, all!: Collection<(K, V)> @local!): Unit
+
+    // 原始
+    @Frozen
+    public operator func [](key: K, value!: V): Unit
+
+    // 新增
+    @Frozen
+    public operator func [](this @local!, key: K @local!, value!: V @local!): Unit
+
+    // 原始
+    @Frozen
+    public func remove(key: K): Option<V>
+
+    // 新增
+    @Frozen
+    public func remove(this @local!, key: K @local?): Option<V> @local!
+
+    // 原始
+    @Frozen
+    public func remove(all!: Collection<K>): Unit
+
+    // 新增
+    @Frozen
+    public func remove(this @local!, all!: Collection<K> @local?): Unit
+
+    // 原始
+    @Frozen
+    public func removeIf(predicate: (K, V) -> Bool): Unit
+
+    // 新增
+    @Frozen
+    public func removeIf(this @local!, predicate: ((K @local?, V @local?) -> Bool) @local?): Unit
+
+    // 原始
+    @Frozen
+    public func clear(): Unit
+
+    // 新增
+    @Frozen
+    public func clear(this @local!): Unit
+
+    // 原始
+    @Frozen
+    public func reserve(additional: Int64): Unit
+
+    // 新增
+    @Frozen
+    public func reserve(this @local!, additional: Int64): Unit
+
+    // ---- 获取内部数据（R3 / R4 / R6 / R8） ----
+    // 原始
+    @Frozen
+    public func get(key: K): ?V
+
+    // 新增
+    @Frozen
+    public func get(this @local!, key: K @local?): Option<V> @local!
+
+    // 新增
+    @Frozen
+    public func get(this @local?, key: K @local?): Option<V> @local?
+
+    // 原始
+    @Frozen
+    public operator func [](key: K): V
+
+    // 新增
+    @Frozen
+    public operator func [](this @local!, key: K @local?): V @local!
+
+    // 新增
+    @Frozen
+    public operator func [](this @local?, key: K @local?): V @local?
+
+    // 原始
+    @Frozen
+    public func contains(key: K): Bool
+
+    // 新增
+    @Frozen
+    public func contains(this @local?, key: K @local?): Bool
+
+    // 原始
+    @Frozen
+    public func contains(all!: Collection<K>): Bool
+
+    // 新增
+    @Frozen
+    public func contains(this @local?, all!: Collection<K> @local?): Bool
+
+    // 原始
+    @Frozen
+    public func isEmpty(): Bool
+
+    // 新增
+    @Frozen
+    public func isEmpty(this @local?): Bool
+
+    // 原始
+    @Frozen
+    public func keys(): EquatableCollection<K>
+
+    // 新增
+    @Frozen
+    public func keys(this @local!): EquatableCollection<K> @local!
+
+    // 新增
+    @Frozen
+    public func keys(this @local?): EquatableCollection<K> @local?
+
+    // 原始
+    @Frozen
+    public func values(): Collection<V>
+
+    // 新增
+    @Frozen
+    public func values(this @local!): Collection<V> @local!
+
+    // 新增
+    @Frozen
+    public func values(this @local?): Collection<V> @local?
+
+    // 原始
+    @Frozen
+    public func entryView(key: K): MapEntryView<K, V>
+
+    // 新增
+    @Frozen
+    public func entryView(this @local!, key: K @local?): MapEntryView<K, V> @local!
+
+    // 新增
+    @Frozen
+    public func entryView(this @local?, key: K @local?): MapEntryView<K, V> @local?
+
+    // 原始
+    @Frozen
+    public func iterator(): HashMapIterator<K, V>
+
+    // 新增
+    @Frozen
+    public func iterator(this @local!): HashMapIterator<K, V> @local!
+
+    // 新增
+    @Frozen
+    public func iterator(this @local?): HashMapIterator<K, V> @local?
+
+    // 原始
+    @Frozen
+    public func toArray(): Array<(K, V)>
+
+    // 新增
+    @Frozen
+    public func toArray(this @local!): Array<(K, V)> @local!
+
+    // 新增
+    @Frozen
+    public func toArray(this @local?): Array<(K, V)> @local?
+
+    // 原始
+    @Frozen
+    public func clone(): HashMap<K, V>
+
+    // 新增
+    @Frozen
+    public func clone(this @local!): HashMap<K, V> @local!
+
+    // 新增
+    @Frozen
+    public func clone(this @local?): HashMap<K, V> @local?
+
+    // 原始
+    @Frozen
+    public func toString(): String
+
+    // 新增
+    @Frozen
+    public func toString(this @local?): String @local! where V <: ToString, K <: ToString
+
+    // 原始
+    @Frozen
+    public operator func ==(right: HashMap<K, V>): Bool
+
+    // 新增
+    @Frozen
+    public operator func ==(this @local?, right: HashMap<K, V> @local?): Bool where V <: Equatable<V>
+
+    // ---- prop（R9） ----
+    // 原始
+    @Frozen
+    public prop size: Int64
+
+    // 新增
+    @Frozen
+    public prop size: Int64 @local?
+
+    // 原始
+    @Frozen
+    public prop capacity: Int64
+
+    // 新增
+    @Frozen
+    public prop capacity: Int64 @local?
+
+    // ---- 高阶函数（按“有无容器/累积产出”分组） ----
+    // 原始
+    @When[env != "ohos"]
+    public func forEach(action: (K, V) -> Unit): Unit
+
+    // 新增
+    @Frozen
+    public func forEach(this @local?, action: ((K @local?, V @local?) -> Unit) @local?): Unit
+
+    // 原始
+    @When[env != "ohos"]
+    public func all(predicate: (K, V) -> Bool): Bool
+
+    // 新增
+    @Frozen
+    public func all(this @local?, predicate: ((K @local?, V @local?) -> Bool) @local?): Bool
+
+    // 原始
+    @When[env != "ohos"]
+    public func any(predicate: (K, V) -> Bool): Bool
+
+    // 新增
+    @Frozen
+    public func any(this @local?, predicate: ((K @local?, V @local?) -> Bool) @local?): Bool
+
+    // 原始
+    @When[env != "ohos"]
+    public func none(predicate: (K, V) -> Bool): Bool
+
+    // 新增
+    @Frozen
+    public func none(this @local?, predicate: ((K @local?, V @local?) -> Bool) @local?): Bool
+
+    // 原始
+    @When[env != "ohos"]
+    public func mapValues<R>(transform: (K, V) -> R): HashMap<K, R>
+
+    // 新增
+    @Frozen
+    public func mapValues<R>(this @local!, transform: ((K @local?, V @local?) -> R @local!) @local?): HashMap<K, R> @local!
+
+    // 原始
+    @When[env != "ohos"]
+    public func mapValues<R>(transform: (V) -> R): HashMap<K, R>
+
+    // 新增
+    @Frozen
+    public func mapValues<R>(this @local!, transform: ((V @local?) -> R @local!) @local?): HashMap<K, R> @local!
+
+    // 原始
+    @When[env != "ohos"]
+    public func filter(predicate: (K, V) -> Bool): HashMap<K, V>
+
+    // 新增
+    @Frozen
+    public func filter(this @local!, predicate: ((K @local?, V @local?) -> Bool) @local?): HashMap<K, V> @local!
+
+    // 原始
+    @When[env != "ohos"]
+    public func fold<R>(initial: R, operation: (R, K, V) -> R): R
+
+    // 新增
+    @Frozen
+    public func fold<R>(this @local!, initial: R @local!, operation: ((R @local!, K @local?, V @local?) -> R @local!) @local?): R @local!
+
+    // 原始
+    @When[env != "ohos"]
+    public func reduce(operation: (V, V) -> V): Option<V>
+
+    // 新增
+    @Frozen
+    public func reduce(this @local!, operation: ((V @local!, V @local?) -> V @local!) @local?): Option<V> @local!
+
+}
+```
