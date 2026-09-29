@@ -9,12 +9,12 @@ public interface Iterable<E> {
 
     // 新增
     func iterator(this @ local!): Iterator<E> @ local! {
-        throw IllegalStateException("Current Type does not implement 'iterator' method for its @local! instance")
+     throw IllegalStateException("Current Type does not implement 'iterator' method for its @local! instance")
     }
 
     // 新增
     func iterator(this @ local?): Iterator<E> @ local? {
-        throw IllegalStateException("Current Type does not implement 'iterator' method for its @local? instance")
+     throw IllegalStateException("Current Type does not implement 'iterator' method for its @local? instance")
     }
 
 }
@@ -30,12 +30,12 @@ public abstract class Iterator<T> <: Iterable<T> {
 
     // 新增
     public open func next(this @ local!): Option<T> @ local! {
-        throw IllegalStateException("Current iterator does not implement 'next' method for its @local! instance")
+     throw IllegalStateException("Current iterator does not implement 'next' method for its @local! instance")
     }
 
     // 新增
     public open func next(this @ local?): Option<T> @ local? {
-        throw IllegalStateException("Current iterator does not implement 'next' method for its @local? instance")
+     throw IllegalStateException("Current iterator does not implement 'next' method for its @local? instance")
     }
 
     // ---- 构造函数（新增） ----
@@ -68,7 +68,7 @@ public interface ToString {
 
     // 新增
     func toString(this @local?): String @local! {
-        throw UnimplementedException("Current Type does not implement 'toString' method for its @local? instance")
+     throw UnimplementedException("Current Type does not implement 'toString' method for its @local? instance")
     }
 
 }
@@ -88,7 +88,7 @@ public class UnimplementedException <: Exception {
     // ---- 成员函数 ----
     // 新增
     protected override func getClassName(): String {
-        return "UnimplementedException"
+     return "UnimplementedException"
     }
 
 }
@@ -184,7 +184,7 @@ public interface Equatable<T> <: Equal<T> & NotEqual<T> {
     // ---- Equatable<T>（默认实现） ----
     // 新增
     operator func !=(this @ local?, other: T @ local?): Bool {
-        !(this == other)
+     !(this == other)
     }
 
 }
@@ -285,7 +285,7 @@ public interface List<T> <: ReadOnlyList<T> {
     func add(all!: Collection<T>, at!: Int64): Unit
 
     // 新增
-    func add(this @ local!, all!: Collection<T>, at!: Int64): Unit
+    func add(this @ local!, all!: Collection<T> @ local!, at!: Int64): Unit
 
     // ---- 删除 / 清空（@local!） ----
     // 原始
@@ -304,7 +304,7 @@ public interface List<T> <: ReadOnlyList<T> {
     func removeIf(predicate: (T) -> Bool): Unit
 
     // 新增
-    func removeIf(predicate: ((T @ local!) -> Bool) @ local?): Unit
+    func removeIf(this @ local!, predicate: ((T @ local!) -> Bool) @ local?): Unit
 
     // 原始
     func clear(): Unit
@@ -647,11 +647,11 @@ public struct Array<T> {
 
     // 新增
     @Frozen
-    public operator func [](this @local!, range: Range<Int64>): Array<T> @local!
+    public operator func [](this @local!, range: Range<Int64> @local?): Array<T> @local!
 
     // 新增
     @Frozen
-    public operator func [](this @local?, range: Range<Int64>): Array<T> @local?
+    public operator func [](this @local?, range: Range<Int64> @local?): Array<T> @local?
 
     // 原始
     @Frozen
@@ -726,7 +726,7 @@ public struct Array<T> {
 
     // 新增
     @Frozen
-    public operator func [](this @local!, range: Range<Int64>, value!: Array<T> @local!): Unit
+    public operator func [](this @local!, range: Range<Int64> @local?, value!: Array<T> @local!): Unit
 
     // 原始
     @Frozen
@@ -761,7 +761,7 @@ public struct Array<T> {
     // 新增
     @Frozen
     public func isEmpty(this @local?): Bool {
-        return this.len == 0
+     return this.len == 0
     }
 
     // 原始
@@ -1738,86 +1738,164 @@ extend<T> ArrayList<T> <: ListOfCopyable<T> where T <: Copyable {
 }
 ```
 
-## class HashMap<K, V>（最小化按需适配）
+## interface Map<K, V>（含 ReadOnlyMap）
 
 ```cangjie
-public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
-    // ---- 构造函数 ----
+public interface Map<K, V> <: ReadOnlyMap<K, V> {
+    // ---- 设置内部成员（Map 自有，只适配 @local!） ----
     // 原始
-    @Frozen
-    public init()
+    func add(key: K, value: V): ?V
 
     // 新增
-    @Frozen
-    public init(this @local!)
+    func add(this @local!, key: K @local!, value: V @local!): ?V @local!
 
     // 原始
-    @Frozen
-    public init(capacity: Int64)
+    func add(all!: Collection<(K, V)>): Unit
 
     // 新增
-    @Frozen
-    public init(this @local!, capacity: Int64)
-
-    // ---- 设置内部成员 ----
-    // 原始
-    @Frozen
-    public func add(key: K, value: V): Option<V>
-
-    // 新增
-    @Frozen
-    public func add(this @local!, key: K @local!, value: V @local!): Option<V> @local!
+    func add(this @local!, all!: Collection<(K, V)> @local!): Unit
 
     // 原始
-    @Frozen
-    public operator func [](key: K, value!: V): Unit
+    func remove(key: K): Option<V>
 
     // 新增
-    @Frozen
-    public operator func [](this @local!, key: K @local!, value!: V @local!): Unit
+    func remove(this @local!, key: K @local?): Option<V> @local!
 
-    // ---- 获取内部数据 ----
     // 原始
-    @Frozen
-    public func get(key: K): ?V
+    func remove(all!: Collection<K>): Unit
 
     // 新增
-    @Frozen
-    public func get(this @local!, key: K @local?): Option<V> @local!
+    func remove(this @local!, all!: Collection<K> @local?): Unit
+
+    // 原始
+    func removeIf(predicate: (K, V) -> Bool): Unit
 
     // 新增
-    @Frozen
-    public func get(this @local?, key: K @local?): Option<V> @local?
+    func removeIf(this @local!, predicate: ((K @local?, V @local?) -> Bool) @local?): Unit
+
+    // 原始
+    func clear(): Unit
+
+    // 新增
+    func clear(this @local!): Unit
+
+    // 原始
+    operator func [](key: K, value!: V): Unit
+
+    // 新增
+    operator func [](this @local!, key: K @local!, value!: V @local!): Unit
 
     // 原始
     @Frozen
-    public operator func [](key: K): V
+    func addIfAbsent(key: K, value: V): ?V
 
     // 新增
     @Frozen
-    public operator func [](this @local!, key: K @local?): V @local!
+    func addIfAbsent(this @local!, key: K @local!, value: V @local!): ?V @local!
 
-    // 新增
-    @Frozen
-    public operator func [](this @local?, key: K @local?): V @local?
-
-    // ---- 判定类 ----
     // 原始
     @Frozen
-    public func contains(key: K): Bool
+    func replace(key: K, value: V): ?V
 
     // 新增
     @Frozen
-    public func contains(this @local?, key: K @local?): Bool
+    func replace(this @local!, key: K @local!, value: V @local!): ?V @local!
 
-    // ---- prop ----
+    // ---- 获取内部数据（ReadOnlyMap 声明， / / ） ----
     // 原始
-    @Frozen
-    public prop size: Int64
+    func get(key: K): ?V
 
     // 新增
-    @Frozen
-    public prop size: Int64 @local?
+    func get(this @local!, key: K @local?): ?V @local!
+
+    // 新增
+    func get(this @local?, key: K @local?): ?V @local?
+
+    // 原始
+    operator func [](key: K): V
+
+    // 新增
+    operator func [](this @local!, key: K @local?): V @local!
+
+    // 新增
+    operator func [](this @local?, key: K @local?): V @local?
+
+    // 原始
+    func contains(key: K): Bool
+
+    // 新增
+    func contains(this @local?, key: K @local?): Bool
+
+    // 原始
+    func contains(all!: Collection<K>): Bool
+
+    // 新增
+    func contains(this @local?, all!: Collection<K> @local?): Bool
+
+    // 原始
+    func keys(): EquatableCollection<K>
+
+    // 新增
+    func keys(this @local!): EquatableCollection<K> @local!
+
+    // 新增
+    func keys(this @local?): EquatableCollection<K> @local?
+
+    // 原始
+    func values(): Collection<V>
+
+    // 新增
+    func values(this @local!): Collection<V> @local!
+
+    // 新增
+    func values(this @local?): Collection<V> @local?
+
+    // 原始
+    func entryView(k: K): MapEntryView<K, V>
+
+    // 新增
+    func entryView(this @local!, k: K @local?): MapEntryView<K, V> @local!
+
+    // 新增
+    func entryView(this @local?, k: K @local?): MapEntryView<K, V> @local?
+
+}
+```
+
+## interface MapEntryView<K, V>
+
+```cangjie
+public interface MapEntryView<K, V> {
+    // 原始
+    prop key: K
+
+    // 新增
+    prop key: K @local?
+
+    // 原始
+    mut prop value: ?V
+
+    // 新增
+    mut prop value: ?V @local!
+
+}
+```
+
+## interface EquatableCollection<T>
+
+```cangjie
+public interface EquatableCollection<T> <: Collection<T> {
+    // 原始
+    func contains(element: T): Bool
+
+    // 新增
+    func contains(this @local?, element: T @local?): Bool
+
+    // 原始
+    func contains(all!: Collection<T>): Bool
+
+    // 新增
+    func contains(this @local?, all!: Collection<T> @local?): Bool
 
 }
 ```
@@ -1826,7 +1904,7 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
 
 ```cangjie
 public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
-    // ---- 构造函数（R1 / R2） ----
+    // ---- 构造函数 ----
     // 原始
     @Frozen
     public init()
@@ -1879,7 +1957,7 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
     @Frozen
     public init(this @local?, size: Int64, initElement: (Int64) -> (K, V) @local?)
 
-    // ---- 设置内部成员（R5；只读 key 按 R8 放宽） ----
+    // ---- 设置内部成员（只读 key 放宽） ----
     // 原始
     @Frozen
     public func add(key: K, value: V): Option<V>
@@ -1944,7 +2022,7 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
     @Frozen
     public func reserve(this @local!, additional: Int64): Unit
 
-    // ---- 获取内部数据（R3 / R4 / R6 / R8） ----
+    // ---- 获取内部数据 ----
     // 原始
     @Frozen
     public func get(key: K): ?V
@@ -2081,7 +2159,7 @@ public class HashMap<K, V> <: Map<K, V> where K <: Hashable & Equatable<K> {
     @Frozen
     public operator func ==(this @local?, right: HashMap<K, V> @local?): Bool where V <: Equatable<V>
 
-    // ---- prop（R9） ----
+    // ---- prop ----
     // 原始
     @Frozen
     public prop size: Int64
