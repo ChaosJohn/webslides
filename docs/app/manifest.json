@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-28T09:32:32.606Z",
+  "generated": "2026-09-29T06:45:58.446Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -8,12 +8,12 @@
     {
       "name": "cangjie",
       "type": "dir",
-      "modified": "2026-09-28T17:32:16+08:00",
+      "modified": "2026-09-29T14:45:46+08:00",
       "children": [
         {
           "name": "localmode",
           "type": "dir",
-          "modified": "2026-09-28T17:32:16+08:00",
+          "modified": "2026-09-29T14:45:46+08:00",
           "children": [
             {
               "name": "local-mode-for-std-changes-with-full-hashmap.html",
@@ -24,14 +24,20 @@
             {
               "name": "local-mode-for-std-changes.html",
               "type": "file",
-              "size": 301647,
-              "modified": "2026-09-28T17:32:13+08:00"
+              "size": 312627,
+              "modified": "2026-09-29T14:45:41+08:00"
             },
             {
               "name": "local-mode-for-std-changes.md",
               "type": "file",
-              "size": 49936,
-              "modified": "2026-09-28T17:32:16+08:00"
+              "size": 51662,
+              "modified": "2026-09-29T14:45:44+08:00"
+            },
+            {
+              "name": "local-mode-for-std-guide.md",
+              "type": "file",
+              "size": 12189,
+              "modified": "2026-09-29T14:45:46+08:00"
             }
           ]
         }
