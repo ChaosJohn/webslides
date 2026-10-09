@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-29T06:45:58.446Z",
+  "generated": "2026-10-09T01:57:32.942Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -8,7 +8,7 @@
     {
       "name": "cangjie",
       "type": "dir",
-      "modified": "2026-09-29T14:45:46+08:00",
+      "modified": "2026-10-09T09:57:18+08:00",
       "children": [
         {
           "name": "localmode",
@@ -38,6 +38,19 @@
               "type": "file",
               "size": 12189,
               "modified": "2026-09-29T14:45:46+08:00"
+            }
+          ]
+        },
+        {
+          "name": "meetup20261010",
+          "type": "dir",
+          "modified": "2026-10-09T09:57:18+08:00",
+          "children": [
+            {
+              "name": "cangjie_meetup_sec_v8.pptx",
+              "type": "file",
+              "size": 1479022,
+              "modified": "2026-10-09T09:57:18+08:00"
             }
           ]
         }
