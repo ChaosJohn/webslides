@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-15T11:29:18.660Z",
+  "generated": "2026-10-15T12:15:51.332Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -103,13 +103,13 @@
     {
       "name": "ICSL2026RCA",
       "type": "dir",
-      "modified": "2026-10-15T19:28:54+08:00",
+      "modified": "2026-10-15T20:15:24+08:00",
       "children": [
         {
           "name": "cangjie-libs-icsl-rca.md",
           "type": "file",
-          "size": 16165,
-          "modified": "2026-10-15T19:28:54+08:00"
+          "size": 16377,
+          "modified": "2026-10-15T20:15:24+08:00"
         },
         {
           "name": "problems.md",
