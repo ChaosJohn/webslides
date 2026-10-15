@@ -1,0 +1,14 @@
+docs/ICSL2026RCA/cangjie-libs-icsl-rca.md
+  h_24be5f9e02d8b0 39-40,91-92,142-143,177,230,283,295-296,331,333,335,344,348-349
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ad8e05441bd949a3b3ac895102e9f6653327b17b",
+  "prompts": {},
+  "humans": {
+    "h_24be5f9e02d8b0": {
+      "author": "Chaos John <chaosjohn.yjh@iclpud.com>"
+    }
+  }
+}
