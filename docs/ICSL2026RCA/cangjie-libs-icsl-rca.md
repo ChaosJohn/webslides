@@ -36,8 +36,8 @@
 
 **改进措施**：
 
-- 测试补充：把 RFC 4291 规定的全部合法/非法 IPv6 都补充到测试用例中。
-- 举一反三：对所有与 RFC 有关的模块，都需要按照 RFC 规定的规格补充完整的测试用例。
+- 测试补充：把 RFC 4291 规定的全部合法/非法 IPv6 都补充到测试用例中。-- wip，已扫出部分缺失，补充中
+- 举一反三：对所有与 RFC 有关的模块，都需要按照 RFC 规定的规格补充完整的测试用例。 -- pending，待排查
 
 
 ***
@@ -88,8 +88,8 @@ FsInfo* CJ_FS_OpenFile(const char* path, int32_t openMode) {
 
 **改进措施**：
 
-- 代码扫描：用 AI 扫描 std/fs 所有 `open`/`openat`/`create` 调用，检查是否有未带 `O_NOFOLLOW` 的，逐个确认是否需要补。
-- 测试补充：构造符号链接竞态场景的集成测试。
+- 代码扫描：用 AI 扫描 std/fs 所有 `open`/`openat`/`create` 调用，检查是否有未带 `O_NOFOLLOW` 的，逐个确认是否需要补。 -- done，无其它类似问题
+- 测试补充：构造符号链接竞态场景的集成测试。 -- done，已补充
 
 
 ***
@@ -139,8 +139,8 @@ try (passwordCStr = LibC.mallocCString(password).asResource(), ...) {
 
 **改进措施**：
 
-- 代码扫描：用 AI 扫描 stdx/crypto 所有处理密钥/密码的堆缓冲区，检查加密/解密、签名/验签等成对路径是否对称清零。
-- 排查黄区 codecheck 工程：为什么没有检查出 password 未清零的问题。
+- 代码扫描：用 AI 扫描 stdx/crypto 所有处理密钥/密码的堆缓冲区，检查加密/解密、签名/验签等成对路径是否对称清零。 -- wip，发现其它类似的疑似问题，修复中
+- 排查黄区 codecheck 工程：为什么没有检查出 password 未清零的问题。 -- done，已确认黄区codecheck工程配置了C的规则集，且历史屏蔽项中未包含本问题代码，排除了人为的误屏蔽，是codecheck工程的能力不足
 
 
 ***
@@ -174,7 +174,7 @@ try (passwordCStr = LibC.mallocCString(password).asResource(), ...) {
 
 **改进措施**：
 
-- 代码扫描：用 AI 扫描 stdx/crypto 所有 OpenSSL 对象的 alloc 点，检查每个错误出口是否都释放了对应对象。
+- 代码扫描：用 AI 扫描 stdx/crypto 所有 OpenSSL 对象的 alloc 点，检查每个错误出口是否都释放了对应对象。 -- done, 无其它类似问题。
 
 
 ***
@@ -227,7 +227,7 @@ public func reset(): Unit {
 
 **改进措施**：
 
-- 代码扫描：用 AI 扫描 stdx/crypto 所有 Cangjie unsafe 对象（带析构器的），检查 catch/错误路径释放后是否置空，防止析构器二次释放。
+- 代码扫描：用 AI 扫描 stdx/crypto 所有 Cangjie unsafe 对象（带析构器的），检查 catch/错误路径释放后是否置空，防止析构器二次释放。 -- done，无其它类似问题
 
 
 ***
@@ -280,7 +280,7 @@ this.contentLength += chunkSize   // ★ 累计后从不与 maxRequestBodySize �
 
 * **影响**：未认证客户端可经 `Transfer-Encoding: chunked` 发送任意大小 / 任意慢速请求体，消耗连接、工作线程、带宽；handler 缓冲时还会耗尽内存。
 
-* **定级**：中危（可用性）。属 1:1 攻击 —— 攻击者资源成本与服务器相当，需大量并发才有显著影响。
+* **定级**：低危（可用性）。属 1:1 攻击 —— 攻击者资源成本与服务器相当，需大量并发才有显著影响。
 
 **问题控制点**
 
@@ -292,8 +292,8 @@ this.contentLength += chunkSize   // ★ 累计后从不与 maxRequestBodySize �
 
 **改进措施**：
 
-- 测试补充：发送 chunked 流超过 `maxRequestBodySize` 的请求，断言被拒。
-- 举一反三：用 AI 扫描 stdx/net 其他配置项（读超时、连接数限制等），检查是否也有分支遗漏。
+- 测试补充：发送 chunked 流超过 `maxRequestBodySize` 的请求，断言被拒。 -- done，已补充
+- 举一反三：用 AI 扫描 stdx/net 其他配置项（读超时、连接数限制等），检查是否也有分支遗漏。 -- wip，发现其他类似的疑似问题，分析修复中。
 
 
 ***
@@ -325,17 +325,14 @@ case RegularFile | Directory =>
     ensureRegularFileParentWithinDirectory(parentDir, destAbsoluteDir, entry.name)
 ```
 
-符号链接 / 硬链接分支同样跳过 "解析后父级是否仍在解压根内" 的校验，只校验链接目标。
-
 
 * **根因**：
 
-1. **先删除后校验**：`remove(entryPath)` 在 `ensureRegularFileParentWithinDirectory` 之前；词法校验（`isPathWithinDirectory` + `normalize()`）无法解析已存在于解压根下的父级符号链接。
-3. **check-then-use 竞态**：基于路径名校验后再次解析存在 TOCTOU。
+**先删除后校验**：`remove(entryPath)` 在 `ensureRegularFileParentWithinDirectory` 之前；词法校验（`isPathWithinDirectory` + `normalize()`）无法解析已存在于解压根下的父级符号链接。
 
-* **利用前提**：`overwrite: true`，且解压根下存在（或被竞态植入）父级符号链接。攻击者经成员名 `sub/<target>` 删除解压根外非目录文件，或在根外创建链接。
+* **利用前提**：`overwrite: true`，且解压根下存在（或被竞态植入）父级符号链接。。
 
-* **定级**：中危（文件系统完整性）。非无限路径穿越。
+* **定级**：低危。非无限路径穿越。
 
 **问题控制点**
 
@@ -344,12 +341,12 @@ case RegularFile | Directory =>
 | ------------- | -------- | ---------------------------------------------------------------- |
 | 代码检视          | ❌        | "先删后校验" 的顺序问题跨多个 if/match 分支，检视单段易漏                              |
 | 单元测试 | ❌ 本应在此拦住 | 应有 "预置父级符号链接 + overwrite=true" 的用例，断言不越界删除；现有 tar 测试只测正常解压       |
-| 静态扫描（含白盒AI扫描）          | ⚠️       | 通用 MEM-003 TOCTOU 部分匹配，但 stdx\_compress 无 "归档路径穿越 / 符号链接" 组件特有模式 |
+| 静态扫描（含白盒AI扫描）          | ⚠️       | 漏洞模式库部分匹配，但 stdx\_compress 无 "归档路径穿越 / 符号链接" 组件特有模式 |
 
 **改进措施**：
 
-- 测试补充：预置父级符号链接 + `overwrite=true`，断言不越界删除；测 symlink/hardlink 条目不写到解压根外。
-- 举一反三：用 AI 扫描 stdx/compress、std/fs ，检查是否有类似路径穿越或先删后校验的问题。
+- 测试补充：预置父级符号链接 + `overwrite=true`，断言不越界删除；测 symlink/hardlink 条目不写到解压根外。-- done，已补充
+- 举一反三：用 AI 扫描 stdx/compress、std/fs ，检查是否有类似路径穿越或先删后校验的问题。 -- done，无其它类似问题。
 
 
 ***
