@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-13T12:29:23.172Z",
+  "generated": "2026-10-15T01:36:34.227Z",
   "meta": {
     "owner": "ChaosJohn",
     "repo": "webslides"
@@ -8,7 +8,7 @@
     {
       "name": "cangjie",
       "type": "dir",
-      "modified": "2026-10-13T20:29:08+08:00",
+      "modified": "2026-10-15T09:36:18+08:00",
       "children": [
         {
           "name": "localmode",
@@ -44,8 +44,14 @@
         {
           "name": "meetup20261010",
           "type": "dir",
-          "modified": "2026-10-09T09:57:18+08:00",
+          "modified": "2026-10-15T09:36:18+08:00",
           "children": [
+            {
+              "name": "仓颉社区meetup_安全_v9.pptx",
+              "type": "file",
+              "size": 1685784,
+              "modified": "2026-10-15T09:36:18+08:00"
+            },
             {
               "name": "cangjie_meetup_sec_v8.pptx",
               "type": "file",
