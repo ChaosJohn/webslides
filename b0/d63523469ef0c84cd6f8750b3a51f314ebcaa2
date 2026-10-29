@@ -1,0 +1,14 @@
+docs/cangjie/exception/exception_analysis_report.md
+  h_baea9421f36f49 1-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b0d63523469ef0c84cd6f8750b3a51f314ebcaa2",
+  "prompts": {},
+  "humans": {
+    "h_baea9421f36f49": {
+      "author": "Chaos John <chaosjohn.yjh@icloud.com>"
+    }
+  }
+}
